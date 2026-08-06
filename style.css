@@ -59,7 +59,7 @@ html, body {
 }
 
 /* ==========================================================================
-   FOND ANIMÉ : DÉGRADÉ MESH TRÈS SUBTIL ET QUASI-STATIQUE
+   FOND ANIMÉ : DÉGRADÉ MESH & CANVAS WAVEFORM
    ========================================================================== */
 .bg-mesh {
   position: fixed;
@@ -67,6 +67,15 @@ html, body {
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
+}
+
+.waveform-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.08;
+  pointer-events: none;
 }
 
 .blob {
@@ -184,11 +193,16 @@ html, body {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-subtle);
-  transition: border-color 0.3s ease;
+  transition: border-color 0.3s ease, filter 0.2s ease, box-shadow 0.25s ease;
 }
 
-.panel:hover {
-  border-color: var(--border-hover);
+.panel.panel-pulse {
+  border-color: var(--cyan-accent) !important;
+  box-shadow: 0 0 24px rgba(0, 229, 255, 0.25) !important;
+}
+
+.panel.motion-blur {
+  filter: blur(4px);
 }
 
 .app-card {
@@ -199,15 +213,17 @@ html, body {
 }
 
 /* ==========================================================================
-   EN-TÊTE DE STUDIO ÉPURÉ
+   EN-TÊTE DE STUDIO & SOUND TOGGLE
    ========================================================================== */
 .studio-header {
-  padding: 20px 28px;
+  padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--border-subtle);
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.18);
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .studio-badge {
@@ -215,7 +231,7 @@ html, body {
   align-items: center;
   gap: 8px;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
   letter-spacing: 0.05em;
   font-weight: 500;
@@ -227,6 +243,39 @@ html, body {
   background-color: var(--cyan-accent);
   border-radius: 50%;
   opacity: 0.8;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sound-toggle-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 4px 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.sound-toggle-btn:hover {
+  background: var(--cyan-subtle);
+  border-color: var(--cyan-accent);
+  color: var(--cyan-accent);
+}
+
+.sound-toggle-btn.active {
+  background: var(--cyan-subtle);
+  border-color: var(--cyan-accent);
+  color: var(--cyan-accent);
 }
 
 .studio-meter-decor {
@@ -242,6 +291,53 @@ html, body {
 }
 .vu-segment.cyan { background-color: var(--cyan-accent); opacity: 0.7; }
 .vu-segment.copper { background-color: var(--copper-accent); opacity: 0.7; }
+
+/* ==========================================================================
+   RUBAN PROFILER STICKY
+   ========================================================================== */
+.user-profiler-ribbon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 24px;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid var(--border-subtle);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.ribbon-label {
+  color: var(--text-dim);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.ribbon-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tag-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  color: var(--cyan-accent);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  animation: tagPop 0.25s ease-out;
+}
+
+@keyframes tagPop {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
 
 /* ==========================================================================
    CARTE AUTEUR / SIGNAL DE CONFIANCE
@@ -442,10 +538,13 @@ html, body {
    ========================================================================== */
 .question-block {
   margin-bottom: 30px;
+  position: relative;
 }
 
 .question-label {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 0.98rem;
   font-weight: 600;
   color: var(--text-main);
@@ -456,6 +555,39 @@ html, body {
 .question-label.required-label::after {
   content: " *";
   color: var(--cyan-accent);
+}
+
+.q-checkmark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--cyan-accent);
+  color: #0b0e14;
+  font-size: 0.72rem;
+  font-weight: 700;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.25s ease;
+}
+
+.q-checkmark.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.checkbox-counter-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--cyan-accent);
+  background: rgba(0, 229, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  margin-left: auto;
+  transition: transform 0.15s ease;
 }
 
 .options-grid {
@@ -477,8 +609,9 @@ html, body {
   cursor: pointer;
   user-select: none;
   transform-origin: center center;
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.18s ease, box-shadow 0.2s ease;
   min-height: 48px;
+  overflow: hidden;
 }
 
 .option-card:hover {
@@ -504,6 +637,7 @@ html, body {
   position: relative;
   margin: 0 !important;
   display: inline-block;
+  transition: all 0.2s ease;
 }
 
 .card-indicator.square {
@@ -899,7 +1033,40 @@ html, body {
 }
 
 /* ==========================================================================
-   BOUTONS DE NAVIGATION & SOUMISSION
+   SUMMARY CARD PRE-SUBMIT
+   ========================================================================== */
+.summary-card {
+  border-left: 3px solid var(--cyan-accent);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  background: rgba(0, 229, 255, 0.04);
+}
+
+.summary-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.summary-icon {
+  font-size: 1.2rem;
+}
+
+.summary-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--cyan-accent);
+}
+
+.summary-text {
+  font-size: 0.88rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   BOUTONS DE NAVIGATION & HALO DE CURSEUR (GLOW-BTN)
    ========================================================================== */
 .nav-controls {
   display: flex;
@@ -909,7 +1076,8 @@ html, body {
   margin-top: 28px;
 }
 
-.btn-primary {
+.btn-primary, .glow-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -924,6 +1092,7 @@ html, body {
   cursor: pointer;
   transform-origin: center center;
   min-height: 46px;
+  overflow: hidden;
 }
 
 .btn-primary:disabled {
@@ -985,6 +1154,86 @@ html, body {
 
 .hidden {
   display: none !important;
+}
+
+/* ==========================================================================
+   TOASTS & FLASH MESSAGES ÉPHÉMÈRES
+   ========================================================================== */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast-message {
+  background: rgba(11, 14, 20, 0.92);
+  border: 1px solid var(--cyan-accent);
+  color: var(--cyan-accent);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 8px 16px;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 229, 255, 0.3);
+  backdrop-filter: blur(8px);
+  animation: toastFloat 1s ease-out forwards;
+}
+
+@keyframes toastFloat {
+  0% { opacity: 0; transform: translateY(12px); }
+  20% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; transform: translateY(-4px); }
+  100% { opacity: 0; transform: translateY(-16px); }
+}
+
+/* ==========================================================================
+   INTERSTICE DE RESPIRATION (INTERSTITIAL OVERLAY)
+   ========================================================================== */
+.interstitial-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 14, 20, 0.9);
+  backdrop-filter: blur(16px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9998;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.interstitial-overlay.hidden {
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.interstitial-box {
+  text-align: center;
+  padding: 30px;
+  max-width: 380px;
+  animation: pulseBox 1.2s ease-in-out infinite alternate;
+}
+
+.interstitial-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.interstitial-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--cyan-accent);
+  font-family: var(--font-sans);
+}
+
+@keyframes pulseBox {
+  0% { transform: scale(0.98); }
+  100% { transform: scale(1.02); }
 }
 
 /* ==========================================================================

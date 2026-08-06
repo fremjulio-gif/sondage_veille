@@ -15,11 +15,12 @@
 </head>
 <body>
 
-  <!-- Arrière-plan animé Liquid Mesh -->
+  <!-- Arrière-plan animé Liquid Mesh & Canvas Waveform Réactif -->
   <div class="bg-mesh" aria-hidden="true">
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
     <div class="blob blob-3"></div>
+    <canvas id="waveform-canvas" class="waveform-canvas"></canvas>
     <div class="bg-grid"></div>
   </div>
 
@@ -34,22 +35,36 @@
 
   <!-- Conteneur principal de l'application -->
   <main class="app-viewport">
-    <div class="app-card panel">
+    <div class="app-card panel" id="main-panel">
 
       <!-- En-tête de studio -->
       <header class="studio-header">
         <div class="studio-badge">
           <span class="rec-dot"></span>
-          <span class="badge-text">ÉTUDE DE VEILLE & MÉMOIRE DE FIN D'ÉTUDES — 3IS PARIS</span>
+          <span class="badge-text">ÉTUDE DE VEILLE & MÉMOIRE — 3IS PARIS</span>
         </div>
-        <div class="studio-meter-decor" aria-hidden="true">
-          <div class="vu-segment cyan"></div>
-          <div class="vu-segment cyan"></div>
-          <div class="vu-segment cyan"></div>
-          <div class="vu-segment copper"></div>
-          <div class="vu-segment copper"></div>
+        <div class="header-controls">
+          <button type="button" id="btn-sound-toggle" class="sound-toggle-btn" title="Activer / Désactiver le son studio (Web Audio API)" aria-label="Activer le son">
+            <span class="sound-icon">🔇</span>
+            <span class="sound-label">Audio Studio</span>
+          </button>
+          <div class="studio-meter-decor" aria-hidden="true">
+            <div class="vu-segment cyan"></div>
+            <div class="vu-segment cyan"></div>
+            <div class="vu-segment cyan"></div>
+            <div class="vu-segment copper"></div>
+            <div class="vu-segment copper"></div>
+          </div>
         </div>
       </header>
+
+      <!-- Ruban Sticky de Profilage Dynamique -->
+      <div id="user-profiler-ribbon" class="user-profiler-ribbon hidden" aria-live="polite">
+        <div class="ribbon-label">PROFIL DETECTÉ :</div>
+        <div class="ribbon-tags" id="ribbon-tags">
+          <!-- Injecté dynamiquement -->
+        </div>
+      </div>
 
       <!-- SECTION 1 : ACCUEIL & PRESENTATION -->
       <section id="section-1" class="survey-section active" aria-labelledby="title-sec1">
@@ -86,6 +101,7 @@
           <div class="question-block" id="block-q1">
             <label class="question-label required-label" id="label-q1">
               Parmi ces options, quelle est l'activité principale ?
+              <span class="q-checkmark" id="check-q1">✓</span>
             </label>
 
             <div class="options-grid" role="radiogroup" aria-labelledby="label-q1">
@@ -119,7 +135,7 @@
           </div>
 
           <div class="nav-controls">
-            <button type="button" class="btn-primary" id="btn-sec1-next" disabled>
+            <button type="button" class="btn-primary glow-btn" id="btn-sec1-next" disabled>
               <span>Commencer le questionnaire</span>
               <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
             </button>
@@ -143,7 +159,10 @@
           <div class="sub-step active" id="sec2-step-1" data-step="1">
             <!-- Q2.1 -->
             <div class="question-block">
-              <label class="question-label required-label">1. Rôle principal en post-prod :</label>
+              <label class="question-label required-label">
+                1. Rôle principal en post-prod :
+                <span class="q-checkmark" id="check-pro_job">✓</span>
+              </label>
               <div class="options-grid" role="radiogroup">
                 <label class="option-card compact">
                   <input type="radio" name="pro_job" value="Monteur / Monteuse Son (Dialogues / FX)" required>
@@ -176,7 +195,10 @@
 
             <!-- Q2.2 -->
             <div class="question-block">
-              <label class="question-label required-label">2. Parcours & expérience du terrain :</label>
+              <label class="question-label required-label">
+                2. Parcours & expérience du terrain :
+                <span class="q-checkmark" id="check-pro_experience">✓</span>
+              </label>
               <div class="options-grid" role="radiogroup">
                 <label class="option-card compact">
                   <input type="radio" name="pro_experience" value="Moins de 2 ans - Étudiant / Junior" required>
@@ -203,7 +225,10 @@
 
             <!-- Q2.3 -->
             <div class="question-block">
-              <label class="question-label">3. Quelles tâches sont aujourd'hui confiées à l'IA ou aux algorithmes ? (Plusieurs choix possibles)</label>
+              <label class="question-label">
+                3. Quelles tâches sont aujourd'hui confiées à l'IA ou aux algorithmes ?
+                <span class="checkbox-counter-tag" id="counter-pro_delegated_tasks">0 sélectionné</span>
+              </label>
               <div class="options-grid" role="group">
                 <label class="option-card checkbox-card">
                   <input type="checkbox" name="pro_delegated_tasks" value="Nettoyage spectral (De-noise, De-click...)">
@@ -421,9 +446,9 @@
 
           <!-- SOUS-ÉCRAN 2.3 (Questions 7 à 9) -->
           <div class="sub-step hidden" id="sec2-step-3" data-step="3">
-            <!-- Q2.7 CUSTOM SLIDER -->
+            <!-- Q2.7 CUSTOM SLIDER (Wording Dynamique) -->
             <div class="question-block">
-              <label class="question-label">
+              <label class="question-label" id="label-q2-7">
                 7. Le rôle de l'ingénieur du son glisse-t-il de "l'artisan du signal" vers un simple "superviseur" qui valide le travail des algorithmes ?
               </label>
               <div class="custom-slider-container" data-name="pro_supervisor_role" data-value="3">
@@ -479,7 +504,10 @@
 
             <!-- Q2.9 -->
             <div class="question-block">
-              <label class="question-label">9. Selon le terrain, quels aspects de la post-prod son resteront les plus préservés de l'automatisation ? (Plusieurs choix)</label>
+              <label class="question-label">
+                9. Selon le terrain, quels aspects de la post-prod son resteront les plus préservés de l'automatisation ?
+                <span class="checkbox-counter-tag" id="counter-pro_resistant_fields">0 sélectionné</span>
+              </label>
               <div class="options-grid" role="group">
                 <label class="option-card checkbox-card">
                   <input type="checkbox" name="pro_resistant_fields" value="L'intention artistique et les choix de mixage">
@@ -517,11 +545,11 @@
           </div>
 
           <div class="nav-controls">
-            <button type="button" class="btn-secondary btn-back-substep" id="btn-sec2-back">
+            <button type="button" class="btn-secondary btn-back-substep glow-btn" id="btn-sec2-back">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
               <span>Retour</span>
             </button>
-            <button type="button" class="btn-primary" id="btn-sec2-next">
+            <button type="button" class="btn-primary glow-btn" id="btn-sec2-next">
               <span>Suivant</span>
               <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
             </button>
@@ -545,7 +573,10 @@
           <div class="sub-step active" id="sec3-step-1" data-step="1">
             <!-- Q3.1 -->
             <div class="question-block">
-              <label class="question-label required-label">1. Rôle ou domaine d'activité :</label>
+              <label class="question-label required-label">
+                1. Rôle ou domaine d'activité :
+                <span class="q-checkmark" id="check-public_job">✓</span>
+              </label>
               <div class="options-grid" role="radiogroup">
                 <label class="option-card compact">
                   <input type="radio" name="public_job" value="Réalisation / Mise en scène" required>
@@ -794,11 +825,11 @@
           </div>
 
           <div class="nav-controls">
-            <button type="button" class="btn-secondary btn-back-substep" id="btn-sec3-back">
+            <button type="button" class="btn-secondary btn-back-substep glow-btn" id="btn-sec3-back">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
               <span>Retour</span>
             </button>
-            <button type="button" class="btn-primary" id="btn-sec3-next">
+            <button type="button" class="btn-primary glow-btn" id="btn-sec3-next">
               <span>Suivant</span>
               <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
             </button>
@@ -889,12 +920,23 @@
             <textarea id="global-final-comment" name="global_final_comment" class="studio-textarea" rows="4" placeholder="Votre réflexion libre..."></textarea>
           </div>
 
+          <!-- Bilan / Mini-Infographie Résumé avant Envoi -->
+          <div id="pre-submit-summary" class="glass-card summary-card hidden">
+            <div class="summary-card-header">
+              <span class="summary-icon">📊</span>
+              <span class="summary-title">Synthèse de votre positionnement :</span>
+            </div>
+            <p class="summary-text" id="summary-text-content">
+              <!-- Injecté dynamiquement -->
+            </p>
+          </div>
+
           <div class="nav-controls">
-            <button type="button" class="btn-secondary btn-back" id="btn-sec4-back">
+            <button type="button" class="btn-secondary btn-back glow-btn" id="btn-sec4-back">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
               <span>Retour</span>
             </button>
-            <button type="button" class="btn-submit" id="btn-submit">
+            <button type="button" class="btn-submit glow-btn" id="btn-submit">
               <span class="btn-text">Transmettre mes réponses</span>
               <span class="spinner-loader hidden" id="submit-spinner" aria-hidden="true"></span>
             </button>
@@ -941,6 +983,17 @@
     </div>
   </main>
 
+  <!-- Écran d'Interstice (Respiration 1.2s) -->
+  <div id="interstitial-overlay" class="interstitial-overlay hidden" aria-hidden="true">
+    <div class="interstitial-box glass-card">
+      <div class="interstitial-icon">🎛️</div>
+      <p class="interstitial-title" id="interstitial-title-text">Chargement de la console studio...</p>
+    </div>
+  </div>
+
+  <!-- Container de Toasts / Flash messages éphémères -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
   <!-- Overlay de chargement -->
   <div id="loading-overlay" class="loading-overlay hidden" aria-live="polite">
     <div class="loader-content">
@@ -952,7 +1005,7 @@
         <span></span>
       </div>
       <p class="loading-text">Transmission de vos réponses en cours...</p>
-      <p class="loading-subtext">Merci de patienter quelques secondes</p>
+      <p class="loading-subtext">Signal envoyé vers Google Sheets</p>
     </div>
   </div>
 

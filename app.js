@@ -1,5 +1,5 @@
 /* ==========================================================================
-   LOGIQUE DE L'APPLICATION — VANILLA JS & ANIME.JS
+   LOGIQUE DE L'APPLICATION — VANILLA JS, ANIME.JS & WEB AUDIO API
    Fichier : app.js
    ========================================================================== */
 
@@ -12,10 +12,71 @@ const state = {
   selectedBranch: null, // "pro" ou "public"
   currentSubstepSec2: 1, // 1 à 3
   currentSubstepSec3: 1, // 1 à 3
+  soundEnabled: false,
+  startTime: Date.now(),
+  userJob: "",
   answers: {}
 };
 
-// Libellés dynamiques qualitatifs pour les échelles 1 à 5 (Charte éditoriale 3iS)
+// Synthèse Sonore Web Audio API (Effets Studio)
+let audioCtx = null;
+
+function getAudioContext() {
+  if (!audioCtx && typeof window.AudioContext !== "undefined") {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx && audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function playSound(type) {
+  if (!state.soundEnabled) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  try {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    const now = ctx.currentTime;
+
+    if (type === "click") {
+      // Clic doux mécanique studio
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(800, now);
+      osc.frequency.exponentialRampToValueAtTime(200, now + 0.015);
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
+      osc.start(now);
+      osc.stop(now + 0.015);
+    } else if (type === "tick") {
+      // Tic de potentiomètre / fader
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(1200, now);
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.01);
+      osc.start(now);
+      osc.stop(now + 0.01);
+    } else if (type === "whoosh") {
+      // Glissement de tranche
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(300, now);
+      osc.frequency.exponentialRampToValueAtTime(600, now + 0.08);
+      gain.gain.setValueAtTime(0.05, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+      osc.start(now);
+      osc.stop(now + 0.08);
+    }
+  } catch (e) {
+    // Ignorer les erreurs d'audio browser
+  }
+}
+
+// Libellés dynamiques qualitatifs pour les échelles 1 à 5 (Charte 3iS)
 const SLIDER_FEEDBACK_MAPS = {
   pro_time_gain_agree: {
     1: "1/5 : Pas du tout d'accord",
@@ -62,6 +123,9 @@ const SLIDER_FEEDBACK_MAPS = {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+  initSoundToggle();
+  initWaveformCanvas();
+  initGlowButtons();
   initNavigation();
   initFormListeners();
   initMicroInteractions();
@@ -69,12 +133,171 @@ document.addEventListener("DOMContentLoaded", () => {
   initCustomSliders();
   initSuggestionChips();
   
-  // Animation initiale de la Section 1 au chargement
   animateSectionIn(document.getElementById("section-1"));
 });
 
 /* ==========================================================================
-   1. NAVIGATION & TRANSITIONS ENTRE SECTIONS & SOUS-ÉCRANS (ANIME.JS)
+   AUDIO TOGGLE STUDIO
+   ========================================================================== */
+function initSoundToggle() {
+  const btn = document.getElementById("btn-sound-toggle");
+  if (!btn) return;
+
+  btn.addEventListener("click", () => {
+    state.soundEnabled = !state.soundEnabled;
+    const icon = btn.querySelector(".sound-icon");
+    if (icon) icon.textContent = state.soundEnabled ? "🔊" : "🔇";
+    btn.classList.toggle("active", state.soundEnabled);
+    if (state.soundEnabled) {
+      playSound("click");
+      showToast("Son studio activé 🔊");
+    } else {
+      showToast("Son désactivé 🔇");
+    }
+  });
+}
+
+/* ==========================================================================
+   CANVAS WAVEFORM ANIMÉE & RÉACTICE
+   ========================================================================== */
+let wavePulse = 1;
+function triggerWaveformPulse() {
+  wavePulse = 2.5;
+}
+
+function initWaveformCanvas() {
+  const canvas = document.getElementById("waveform-canvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+
+  let width = (canvas.width = window.innerWidth);
+  let height = (canvas.height = window.innerHeight);
+
+  window.addEventListener("resize", () => {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  });
+
+  let step = 0;
+  function render() {
+    ctx.clearRect(0, 0, width, height);
+    ctx.beginPath();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "rgba(0, 229, 255, 0.4)";
+
+    const centerY = height * 0.85;
+    step += 0.03;
+
+    if (wavePulse > 1) {
+      wavePulse -= 0.04;
+    }
+
+    for (let x = 0; x < width; x += 10) {
+      const y = centerY + Math.sin(x * 0.008 + step) * 15 * wavePulse + Math.cos(x * 0.015 - step) * 8 * wavePulse;
+      if (x === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    requestAnimationFrame(render);
+  }
+  render();
+}
+
+/* ==========================================================================
+   EFFECT HALO RADIANT SUR BOUTONS (GLOW)
+   ========================================================================== */
+function initGlowButtons() {
+  document.querySelectorAll(".glow-btn, .option-card").forEach(btn => {
+    btn.addEventListener("mousemove", (e) => {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      btn.style.setProperty("--mouse-x", `${x}px`);
+      btn.style.setProperty("--mouse-y", `${y}px`);
+    });
+  });
+}
+
+/* ==========================================================================
+   TOASTS & FLASH MESSAGES ÉPHÉMÈRES
+   ========================================================================== */
+function showToast(msg) {
+  const container = document.getElementById("toast-container");
+  if (!container) return;
+
+  const toast = document.createElement("div");
+  toast.className = "toast-message";
+  toast.textContent = msg;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 1100);
+}
+
+/* ==========================================================================
+   RUBAN DE PROFILAGE EN DIRECT (STICKY RIBBON)
+   ========================================================================== */
+function updateProfilerRibbon() {
+  const ribbon = document.getElementById("user-profiler-ribbon");
+  const tagsContainer = document.getElementById("ribbon-tags");
+  if (!ribbon || !tagsContainer) return;
+
+  const tags = [];
+
+  if (state.selectedBranch === "pro") {
+    tags.push("🎬 Pro du son");
+  } else if (state.answers.domain_sector === "cinema_other") {
+    tags.push("🎥 Métiers Image");
+  } else if (state.answers.domain_sector === "public_other") {
+    tags.push("🍿 Spectateur");
+  }
+
+  if (state.answers.pro_job) {
+    tags.push(`🎧 ${state.answers.pro_job.split("(")[0].trim()}`);
+  } else if (state.answers.public_job) {
+    tags.push(`📽️ ${state.answers.public_job.split("(")[0].trim()}`);
+  }
+
+  if (state.answers.pro_experience) {
+    tags.push(`⏱ ${state.answers.pro_experience.split("(")[0].trim()}`);
+  }
+
+  if (Array.isArray(state.answers.pro_delegated_tasks) && state.answers.pro_delegated_tasks.length > 0) {
+    tags.push(`⚙️ ${state.answers.pro_delegated_tasks.length} outils IA`);
+  }
+
+  if (tags.length > 0) {
+    ribbon.classList.remove("hidden");
+    tagsContainer.innerHTML = tags.map(t => `<span class="tag-item">${t}</span>`).join("");
+  }
+}
+
+/* ==========================================================================
+   INTERSTICE DE RESPIRATION (1.2S)
+   ========================================================================== */
+function showInterstitial(titleText, callback) {
+  const overlay = document.getElementById("interstitial-overlay");
+  const title = document.getElementById("interstitial-title-text");
+
+  if (!overlay) {
+    callback();
+    return;
+  }
+
+  if (title) title.textContent = titleText;
+  overlay.classList.remove("hidden");
+  playSound("whoosh");
+
+  setTimeout(() => {
+    overlay.classList.add("hidden");
+    callback();
+  }, 1200);
+}
+
+/* ==========================================================================
+   1. NAVIGATION & TRANSITIONS ENTRE SECTIONS & SOUS-ÉCRANS
    ========================================================================== */
 function initNavigation() {
   const btnSec1Next = document.getElementById("btn-sec1-next");
@@ -85,36 +308,48 @@ function initNavigation() {
   const btnSec4Back = document.getElementById("btn-sec4-back");
   const btnSubmit = document.getElementById("btn-submit");
 
-  // Écran 1 -> Branchement selon Q1
   btnSec1Next?.addEventListener("click", () => {
+    playSound("click");
+    triggerWaveformPulse();
     const domain = getSelectedRadioValue("domain_sector");
     state.answers["domain_sector"] = domain;
+
+    updateProfilerRibbon();
 
     if (domain === "pro_audio") {
       state.selectedBranch = "pro";
       state.currentSubstepSec2 = 1;
       showSubstep("section-2", 1);
-      navigateToSection("section-2");
+      showInterstitial("Entrons dans le vif du sujet sur la console...", () => {
+        navigateToSection("section-2");
+      });
     } else {
       state.selectedBranch = "public";
       state.currentSubstepSec3 = 1;
       showSubstep("section-3", 1);
-      navigateToSection("section-3");
+      showInterstitial("Voyons comment cela résonne côté image...", () => {
+        navigateToSection("section-3");
+      });
     }
   });
 
-  // Section 2 (Pro) - Navigation par sous-étape
   btnSec2Next?.addEventListener("click", () => {
+    playSound("click");
+    triggerWaveformPulse();
     collectSectionInputs("section-2");
+    updateProfilerRibbon();
+
     if (state.currentSubstepSec2 < 3) {
       state.currentSubstepSec2++;
       switchSubstep("section-2", state.currentSubstepSec2);
     } else {
+      updatePreSubmitSummary();
       navigateToSection("section-4");
     }
   });
 
   btnSec2Back?.addEventListener("click", () => {
+    playSound("click");
     if (state.currentSubstepSec2 > 1) {
       state.currentSubstepSec2--;
       switchSubstep("section-2", state.currentSubstepSec2);
@@ -123,18 +358,23 @@ function initNavigation() {
     }
   });
 
-  // Section 3 (Public/Image) - Navigation par sous-étape
   btnSec3Next?.addEventListener("click", () => {
+    playSound("click");
+    triggerWaveformPulse();
     collectSectionInputs("section-3");
+    updateProfilerRibbon();
+
     if (state.currentSubstepSec3 < 3) {
       state.currentSubstepSec3++;
       switchSubstep("section-3", state.currentSubstepSec3);
     } else {
+      updatePreSubmitSummary();
       navigateToSection("section-4");
     }
   });
 
   btnSec3Back?.addEventListener("click", () => {
+    playSound("click");
     if (state.currentSubstepSec3 > 1) {
       state.currentSubstepSec3--;
       switchSubstep("section-3", state.currentSubstepSec3);
@@ -143,8 +383,8 @@ function initNavigation() {
     }
   });
 
-  // Section 4 (Conclusion) - Retour
   btnSec4Back?.addEventListener("click", () => {
+    playSound("click");
     if (state.selectedBranch === "pro") {
       state.currentSubstepSec2 = 3;
       showSubstep("section-2", 3);
@@ -156,9 +396,10 @@ function initNavigation() {
     }
   });
 
-  // Bouton de Soumission finale (Section 4)
   btnSubmit?.addEventListener("click", async () => {
+    playSound("click");
     collectSectionInputs("section-4");
+    checkEasterEgg();
     await handleFormSubmission();
   });
 }
@@ -342,7 +583,7 @@ function updateProgressBar(sectionId) {
 }
 
 /* ==========================================================================
-   2. COMPOSANT CUSTOM SLIDER ULTRA-FLUIDE AVEC FEEDBACK LIKERT DYNAMIQUE
+   2. COMPOSANT CUSTOM SLIDER PHYSIQUE SPRING & FEEDBACK DYNAMIQUE
    ========================================================================== */
 function initCustomSliders() {
   document.querySelectorAll(".custom-slider-container").forEach(container => {
@@ -392,16 +633,17 @@ function initCustomSliders() {
         anime.remove(thumb);
         anime.remove(fill);
 
+        // Effet ressort Spring Physics pour un calage physique naturel
         anime({
           targets: thumb,
           left: `${targetPct}%`,
-          duration: 250,
-          easing: "easeOutCubic"
+          duration: 350,
+          easing: "spring(1, 80, 10, 0)"
         });
         anime({
           targets: fill,
           width: `${targetPct}%`,
-          duration: 250,
+          duration: 350,
           easing: "easeOutCubic"
         });
       } else {
@@ -420,6 +662,7 @@ function initCustomSliders() {
     function onPointerDown(e) {
       isDragging = true;
       thumb.classList.add("is-dragging");
+      triggerWaveformPulse();
 
       if (typeof anime !== "undefined") {
         anime.remove(thumb);
@@ -453,6 +696,8 @@ function initCustomSliders() {
       if (badge) badge.textContent = step;
       if (feedbackLabel) feedbackLabel.textContent = getFeedbackText(step);
       updateTicksVisual(step);
+
+      playSound("tick");
     }
 
     function onPointerUp(e) {
@@ -464,6 +709,7 @@ function initCustomSliders() {
       const { step } = calculatePos(clientX);
 
       setStep(step, true);
+      playSound("click");
 
       window.removeEventListener("mousemove", onPointerMove);
       window.removeEventListener("touchmove", onPointerMove);
@@ -480,7 +726,7 @@ function initCustomSliders() {
 }
 
 /* ==========================================================================
-   3. CHIPS DE SUGGESTION POUR LA QUESTION OUVERTE
+   3. CHIPS DE SUGGESTION & WORDING DYNAMIQUE
    ========================================================================== */
 function initSuggestionChips() {
   const textarea = document.getElementById("global-final-comment");
@@ -490,6 +736,7 @@ function initSuggestionChips() {
 
   chips.forEach(chip => {
     chip.addEventListener("click", () => {
+      playSound("click");
       const prefix = chip.dataset.prefix;
       if (prefix) {
         if (!textarea.value.startsWith(prefix)) {
@@ -502,9 +749,74 @@ function initSuggestionChips() {
   });
 }
 
+function updateDynamicWording() {
+  if (state.answers.pro_job) {
+    const jobRaw = state.answers.pro_job.split("(")[0].trim().toLowerCase();
+    const labelQ27 = document.getElementById("label-q2-7");
+    if (labelQ27) {
+      labelQ27.innerHTML = `7. En tant que <strong>${jobRaw}</strong>, le rôle glisse-t-il de "l'artisan du signal" vers un "superviseur" qui valide le travail des algorithmes ?`;
+    }
+  }
+}
+
 /* ==========================================================================
-   4. GESTION DES CHAMPS "AUTRE" ET FORMULAIRES
+   4. CHECKMARKS & COMPTEURS DE CASES À COCHER & PULSE
    ========================================================================== */
+function initFormListeners() {
+  const section1Inputs = document.querySelectorAll('#section-1 input[name="domain_sector"]');
+  const btnSec1Next = document.getElementById("btn-sec1-next");
+
+  section1Inputs.forEach(input => {
+    input.addEventListener("change", () => {
+      if (btnSec1Next) btnSec1Next.disabled = false;
+      const checkq1 = document.getElementById("check-q1");
+      if (checkq1) checkq1.classList.add("visible");
+      showToast("Option sélectionnée !");
+    });
+  });
+
+  // Écoute des checkboxes pour compteurs dynamiques
+  document.querySelectorAll("input[type='checkbox']").forEach(cb => {
+    cb.addEventListener("change", () => {
+      playSound("click");
+      triggerWaveformPulse();
+      const groupName = cb.name;
+      const groupChecked = document.querySelectorAll(`input[name="${groupName}"]:checked`);
+      const counterEl = document.getElementById(`counter-${groupName}`);
+      if (counterEl) {
+        const count = groupChecked.length;
+        counterEl.textContent = `${count} sélectionné${count > 1 ? "s" : ""}`;
+        if (typeof anime !== "undefined") {
+          anime({ targets: counterEl, scale: [1.2, 1], duration: 150, easing: "easeOutQuad" });
+        }
+      }
+    });
+  });
+
+  // Écoute des radios pour checkmarks et pulse container
+  document.querySelectorAll("input[type='radio']").forEach(radio => {
+    radio.addEventListener("change", () => {
+      playSound("click");
+      triggerWaveformPulse();
+
+      const qBlock = radio.closest(".question-block");
+      const checkmark = qBlock?.querySelector(".q-checkmark");
+      if (checkmark) checkmark.classList.add("visible");
+
+      // Pulse de conteneur
+      const panel = document.getElementById("main-panel");
+      if (panel) {
+        panel.classList.add("panel-pulse");
+        setTimeout(() => panel.classList.remove("panel-pulse"), 250);
+      }
+
+      if (radio.name === "pro_job") {
+        updateDynamicWording();
+      }
+    });
+  });
+}
+
 function initOtherInputsFocus() {
   document.querySelectorAll(".inline-other-input, textarea").forEach(input => {
     input.addEventListener("focus", () => {
@@ -521,28 +833,15 @@ function initOtherInputsFocus() {
   });
 }
 
-function initFormListeners() {
-  const section1Inputs = document.querySelectorAll('#section-1 input[name="domain_sector"]');
-  const btnSec1Next = document.getElementById("btn-sec1-next");
-
-  section1Inputs.forEach(input => {
-    input.addEventListener("change", () => {
-      if (btnSec1Next) btnSec1Next.disabled = false;
-    });
-  });
-}
-
 function collectSectionInputs(sectionId) {
   const section = document.getElementById(sectionId);
   if (!section) return;
 
-  // Inputs cachés des Sliders
   const hiddenInputs = section.querySelectorAll('input[type="hidden"]');
   hiddenInputs.forEach(hInput => {
     if (hInput.name) state.answers[hInput.name] = parseInt(hInput.value || "3");
   });
 
-  // Radios
   const radioInputs = section.querySelectorAll("input[type='radio']:checked");
   radioInputs.forEach(input => {
     if (input.name) {
@@ -558,7 +857,6 @@ function collectSectionInputs(sectionId) {
     }
   });
 
-  // Textareas
   const textareas = section.querySelectorAll("textarea");
   textareas.forEach(txt => {
     if (txt.name) {
@@ -566,7 +864,6 @@ function collectSectionInputs(sectionId) {
     }
   });
 
-  // Checkboxes
   const checkboxes = section.querySelectorAll("input[type='checkbox']");
   const checkboxGroups = {};
   checkboxes.forEach(cb => {
@@ -585,7 +882,6 @@ function collectSectionInputs(sectionId) {
     state.answers[groupName] = checkboxGroups[groupName];
   });
 
-  // Champs texte "Autre"
   section.querySelectorAll(".inline-other-input").forEach(otherInput => {
     if (otherInput.name && otherInput.value.trim()) {
       state.answers[otherInput.name] = otherInput.value.trim();
@@ -599,32 +895,22 @@ function getSelectedRadioValue(name) {
 }
 
 /* ==========================================================================
-   5. ANIME.JS MICRO-INTERACTIONS
+   5. ANIME.JS MICRO-BUMP SUR LES CARTE DE CHOIX
    ========================================================================== */
 function initMicroInteractions() {
   if (typeof anime === "undefined") return;
 
   document.querySelectorAll(".option-card").forEach(card => {
-    const indicator = card.querySelector(".card-indicator");
-
     card.addEventListener("click", (e) => {
       if (e.target.classList.contains("inline-other-input")) return;
       
+      // Micro-bump réactif 1.0 -> 1.04 -> 1.0 (180ms)
       anime({
         targets: card,
-        scale: [0.98, 1],
-        duration: 200,
+        scale: [1, 1.04, 1],
+        duration: 180,
         easing: "easeOutCubic"
       });
-
-      if (indicator) {
-        anime({
-          targets: indicator,
-          scale: [0.75, 1],
-          duration: 180,
-          easing: "easeOutBack"
-        });
-      }
     });
   });
 
@@ -635,14 +921,37 @@ function initMicroInteractions() {
     btn.addEventListener("mouseup", () => {
       anime({ targets: btn, scale: 1, duration: 150, easing: "easeOutCubic" });
     });
-    btn.addEventListener("mouseleave", () => {
-      anime({ targets: btn, scale: 1, duration: 150, easing: "easeOutQuad" });
-    });
   });
 }
 
 /* ==========================================================================
-   6. SOUMISSION WEBHOOK / SCHÉMA FIXE IMMUABLE POUR GOOGLE SHEETS
+   6. PANNEAU DE RÉSUMÉ SYNTHÉTIQUE AVANT VALIDATION
+   ========================================================================== */
+function updatePreSubmitSummary() {
+  const summaryBox = document.getElementById("pre-submit-summary");
+  const summaryText = document.getElementById("summary-text-content");
+
+  if (!summaryBox || !summaryText) return;
+
+  const perception = state.answers.global_ai_perception || "Un simple outil de plus";
+  const earDanger = state.answers.pro_critical_ear_danger || state.answers.public_sound_attention || "Vigilance sur la sensibilité humaine";
+
+  summaryText.innerHTML = `En résumé : Vous percevez l'IA en post-prod principalement comme <strong>"${perception.split("(")[0].trim()}"</strong>, tout en accordant une importance clé à <strong>"${earDanger.split("(")[0].trim()}"</strong>.`;
+  summaryBox.classList.remove("hidden");
+}
+
+/* ==========================================================================
+   7. EASTER EGG ÉGALISEUR TRANCHÉ
+   ========================================================================== */
+function checkEasterEgg() {
+  const elapsed = (Date.now() - state.startTime) / 1000;
+  if (elapsed < 12) {
+    showToast("On dirait que votre avis est déjà bien tranché sur le sujet ! 👀");
+  }
+}
+
+/* ==========================================================================
+   8. SOUMISSION WEBHOOK & TRANSMISSION NARRATIVE
    ========================================================================== */
 async function handleFormSubmission() {
   const btnSubmit = document.getElementById("btn-submit");
@@ -652,7 +961,6 @@ async function handleFormSubmission() {
 
   const answers = state.answers;
 
-  // Calcul de la branche utilisateur
   let userBranch = "public_other";
   if (state.selectedBranch === "pro") {
     userBranch = "pro";
@@ -664,14 +972,10 @@ async function handleFormSubmission() {
 
   const getArrayVal = (val) => Array.isArray(val) ? val.join(", ") : (val || "");
 
-  // Payload fixe et déterministe demandée par le schéma
   const payload = {
-    // --- INFOS GÉNÉRALES ---
     submittedAt: new Date().toISOString(),
     userBranch: userBranch,
     domain_sector: answers.domain_sector || "N/A",
-
-    // --- PARCOURS 1 : PROS DU SON (Rempli si userBranch === 'pro') ---
     pro_job: answers.pro_job || "",
     pro_job_other: answers.pro_job_other || "",
     pro_experience: answers.pro_experience || "",
@@ -689,8 +993,6 @@ async function handleFormSubmission() {
     pro_critical_ear_other: answers.pro_critical_ear_other || "",
     pro_resistant_fields: getArrayVal(answers.pro_resistant_fields),
     pro_resistant_fields_other: answers.pro_resistant_fields_other || "",
-
-    // --- PARCOURS 2 & 3 : METIERS IMAGE / SPECTATEURS (Rempli si userBranch !== 'pro') ---
     public_job: answers.public_job || "",
     public_job_other: answers.public_job_other || "",
     public_sound_attention: answers.public_sound_attention || "",
@@ -703,19 +1005,28 @@ async function handleFormSubmission() {
     public_room_tone_importance: answers.public_room_tone_importance || "",
     public_saved_time_reinvestment: answers.public_saved_time_reinvestment || "",
     public_saved_time_other: answers.public_saved_time_other || "",
-
-    // --- CONCLUSION GLOBALE (REMPLI PAR TOUS) ---
     global_ai_perception: answers.global_ai_perception || "",
     global_ai_perception_other: answers.global_ai_perception_other || "",
     global_human_imperfection_agree: answers.global_human_imperfection_agree || "",
     global_final_comment: answers.global_final_comment || ""
   };
 
-  // 1. Désactivation du bouton & affichage du loader overlay
   if (btnSubmit) btnSubmit.disabled = true;
   if (spinner) spinner.classList.remove("hidden");
   if (btnText) btnText.textContent = "Transmission en cours...";
   if (loadingOverlay) loadingOverlay.classList.remove("hidden");
+
+  // Animation narrative de transmission
+  const mainPanel = document.getElementById("main-panel");
+  if (mainPanel && typeof anime !== "undefined") {
+    anime({
+      targets: mainPanel,
+      translateY: [0, -14],
+      opacity: [1, 0.95],
+      duration: 300,
+      easing: "easeOutCubic"
+    });
+  }
 
   await submitResponses(payload);
 }
@@ -795,12 +1106,22 @@ function fallbackExport(data) {
 function showSuccessScreen(isFallback = false, userBranch = "public_other") {
   const msgEl = document.getElementById("success-message-text");
 
+  // Variantes aléatoires de messages de remerciements
+  const proVariants = [
+    "<strong>🎉 Merci infiniment pour ce retour du terrain !</strong><br><br>Avoir la vision de professionnels en activité est ce qui permet de donner une vraie valeur à ce travail de fin d'études à 3iS. Ces données vont directement nourrir l'analyse de notre mémoire.<br><br><em>Au plaisir d'en échanger autour d'une console ou d'un projet !</em>",
+    "<strong>🎉 Merci beaucoup d'avoir partagé votre expérience !</strong><br><br>Votre retour de terrain est essentiel pour dresser un panorama fidèle de l'intégration de l'IA en post-production. Merci pour le temps accordé à ce travail académique.<br><br><em>Bonnes sessions et à bientôt !</em>",
+    "<strong>🎉 Un grand merci pour votre contribution !</strong><br><br>Votre perspective professionnelle apporte un éclairage indispensable pour comprendre l'évolution de la posture artistique de l'ingénieur du son.<br><br><em>Au plaisir de croiser nos chemins en studio !</em>"
+  ];
+
+  const publicVariants = [
+    "<strong>🎉 Merci beaucoup pour le coup de main !</strong><br><br>Mesurer l'impact de l'IA ne peut pas se faire sans le regard de ceux qui font l'image et de ceux qui vivent les films en salle. Ces retours apportent un éclairage précieux pour compléter notre étude.<br><br><em>Bonne continuation et séances de cinéma !</em>",
+    "<strong>🎉 Merci infiniment pour votre temps !</strong><br><br>Votre vision en tant que collaborateur ou spectateur nous aide à mesurer la perception réelle du son et de ses évolutions technologiques.<br><br><em>Très belles projections à vous !</em>"
+  ];
+
   if (msgEl) {
-    if (userBranch === "pro") {
-      msgEl.innerHTML = "<strong>🎉 Merci infiniment pour ce retour du terrain !</strong><br><br>Avoir la vision de professionnels en activité est ce qui permet de donner une vraie valeur à ce travail de fin d'études à 3iS. Ces données vont directement nourrir l'analyse de notre mémoire.<br><br><em>Au plaisir d'en échanger autour d'une console ou d'un projet !</em>";
-    } else {
-      msgEl.innerHTML = "<strong>🎉 Merci beaucoup pour le coup de main !</strong><br><br>Mesurer l'impact de l'IA ne peut pas se faire sans le regard de ceux qui font l'image et de ceux qui vivent les films en salle. Ces retours apportent un éclairage précieux pour compléter notre étude.<br><br><em>Bonne continuation et séances de cinéma !</em>";
-    }
+    const variants = userBranch === "pro" ? proVariants : publicVariants;
+    const randomMsg = variants[Math.floor(Math.random() * variants.length)];
+    msgEl.innerHTML = randomMsg;
   }
 
   navigateToSection("section-success");
