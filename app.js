@@ -4,7 +4,7 @@
    ========================================================================== */
 
 // Webhook URL Google Apps Script pour l'enregistrement automatique dans Google Sheets
-const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwJBZhYj8OQwVdN68dmlVqHEAp9GKWY0Btt0--rptCULxGGwEOOmScNKj7QSlMGGigvJA/exec"; 
+const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzEt5Dpug5v9RU9qvkJCGjk94SlofIBbj71MTzPRO3Dpx9LmHfR4yQMp8dhKdo9FZqcfA/exec"; 
 
 // État global de l'application
 const state = {
@@ -1209,10 +1209,10 @@ async function handleFormSubmission() {
     });
   }
 
-  await submitResponses(payload);
+  await submitResponses(payload, userBranch);
 }
 
-async function submitResponses(data) {
+async function submitResponses(payload, userBranch = "public_other") {
   const loadingOverlay = document.getElementById("loading-overlay");
   const btnSubmit = document.getElementById("btn-submit");
   const spinner = document.getElementById("submit-spinner");
@@ -1221,27 +1221,29 @@ async function submitResponses(data) {
   if (!WEBHOOK_URL) {
     setTimeout(() => {
       if (loadingOverlay) loadingOverlay.classList.add("hidden");
-      fallbackExport(data);
+      fallbackExport(payload);
     }, 600);
     return;
   }
 
   try {
+    // Mode no-cors indispensable pour Google Apps Script Web App
     await fetch(WEBHOOK_URL, {
       method: "POST",
+      mode: "no-cors",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(data)
+      body: JSON.stringify(payload)
     });
     
     if (loadingOverlay) loadingOverlay.classList.add("hidden");
-    showSuccessScreen(false, data.userBranch);
+    showSuccessScreen(false, userBranch);
   } catch (err) {
     console.warn("Erreur d'envoi vers Google Apps Script, bascule sur fallback local :", err);
     if (loadingOverlay) loadingOverlay.classList.add("hidden");
     if (btnSubmit) btnSubmit.disabled = false;
     if (spinner) spinner.classList.add("hidden");
     if (btnText) btnText.textContent = "Transmettre mes réponses";
-    fallbackExport(data);
+    fallbackExport(payload);
   }
 }
 
