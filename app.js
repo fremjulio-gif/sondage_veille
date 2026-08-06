@@ -1295,7 +1295,7 @@ function showSuccessScreen(isFallback = false, userBranch = "public_other") {
   const msgEl = document.getElementById("success-message-text");
 
   const proVariants = [
-    "<strong>🎉 Un grand merci pour ce retour du terrain !</strong><br><br>Avoir la vision de professionnels en activité est ce qui permet de donner une vraie valeur à mon travail de fin d'études à 3iS. Ces données vont directement nourrir mon analyse.<br><br><em>Au plaisir d'en échanger autour d'une console ou d'un projet !</em>",
+    "<strong>🎉 Un grand merci pour ce retour du terrain !</strong><br><br>Avoir la vision de professionnels en activité est ce qui permet de donner une vraie valeur à mon travail de fin d'études à 3iS Nantes. Ces données vont directement nourrir mon analyse.<br><br><em>Au plaisir d'en échanger autour d'une console ou d'un projet !</em>",
     "<strong>🎉 Merci beaucoup d'avoir partagé votre expérience !</strong><br><br>Votre retour de terrain est essentiel pour dresser un panorama fidèle de l'intégration de l'IA en post-production. Merci pour le temps accordé à mon travail académique.<br><br><em>Bonnes sessions et à bientôt !</em>",
     "<strong>🎉 Un grand merci pour votre contribution !</strong><br><br>Votre perspective professionnelle apporte un éclairage indispensable pour comprendre l'évolution de la posture artistique de l'ingénieur du son.<br><br><em>Au plaisir de croiser vos chemins en studio !</em>"
   ];
