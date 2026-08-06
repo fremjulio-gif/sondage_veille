@@ -1236,14 +1236,18 @@ function fallbackExport(data) {
 function showSuccessScreen(isFallback = false, userBranch = "public_other") {
   const answers = state.answers;
 
-  // 1. Déclenchement des confettis thématiques
-  if (typeof confetti === "function") {
-    confetti({
-      particleCount: 85,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ["#00e5ff", "#e66800", "#10b981", "#fbbf24"]
-    });
+  // 1. Déclenchement des confettis thématiques (sécurisé)
+  try {
+    if (typeof confetti === "function") {
+      confetti({
+        particleCount: 85,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ["#00e5ff", "#e66800", "#10b981", "#fbbf24"]
+      });
+    }
+  } catch (e) {
+    // Ignorer si le script externe confetti est indisponible
   }
 
   // 2. Remplissage de la carte collector "Profil Audio & Vision"
