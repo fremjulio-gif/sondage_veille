@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Étude de Veille — L'IA en Post-Production Cinéma | 3A CAV-SD</title>
+  <meta name="description" content="Sondage académique de veille sur l'impact de l'intelligence artificielle en post-production sonore au cinéma.">
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Arrière-plan animé Liquid Mesh -->
+  <div class="bg-mesh" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <!-- Barre de progression globale en haut -->
+  <div class="global-progress-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="progress-bar-container">
+    <div class="global-progress-bar" id="global-progress-bar"></div>
+    <div class="progress-info">
+      <span class="progress-step-text" id="progress-step-text">Étape 1 sur 3</span>
+      <span class="progress-percentage" id="progress-percentage">33%</span>
+    </div>
+  </div>
+
+  <!-- Conteneur principal de l'application -->
+  <main class="app-viewport">
+    <div class="app-card panel">
+
+      <!-- En-tête de studio -->
+      <header class="studio-header">
+        <div class="studio-badge">
+          <span class="rec-dot"></span>
+          <span class="badge-text">3A CAV-SD • ÉTUDE DE VEILLE ACADÉMIQUE</span>
+        </div>
+        <div class="studio-meter-decor" aria-hidden="true">
+          <div class="vu-segment cyan"></div>
+          <div class="vu-segment cyan"></div>
+          <div class="vu-segment cyan"></div>
+          <div class="vu-segment copper"></div>
+          <div class="vu-segment copper"></div>
+        </div>
+      </header>
+
+      <!-- SECTION 1 : INTRODUCTION ET FILTRAGE DE L'AIGUILLAGE -->
+      <section id="section-1" class="survey-section active" aria-labelledby="title-sec1">
+        <div class="section-content">
+          <h1 id="title-sec1" class="main-title">
+            L'IA en Post-Production au Cinéma : <br>
+            <span class="title-highlight">Évolution du métier et de la posture artistique</span>
+          </h1>
+
+          <!-- Signal de confiance / Author Mini-Bio -->
+          <div class="author-badge">
+            <div class="author-avatar">🎙️</div>
+            <div class="author-info">
+              <p class="author-name"><strong>Jules Frémondière</strong></p>
+              <p class="author-sub">Étudiant en 3ᵉ année d'Ingénierie du Son — 3iS (Cinéma & Sound Design)</p>
+            </div>
+          </div>
+
+          <div class="intro-box glass-card">
+            <p class="intro-paragraph">
+              Bonjour à tous ! Étudiant en 3A CAV-SD, je mène une étude de veille sur l'impact des outils d'IA (iZotope RX, Speech to Text Pro Tools, démixage...) sur la posture artistique de l'ingénieur du son en post-production au cinéma.
+            </p>
+            <div class="intro-meta">
+              <span class="meta-item">⏱ <strong>Durée estimée :</strong> 3 à 5 minutes.</span>
+              <span class="meta-item">🔒 Vos réponses sont totalement anonymes et servent exclusivement à nourrir un travail académique.</span>
+            </div>
+            <p class="intro-outro">
+              Merci pour votre temps et vos retours de terrain !
+            </p>
+          </div>
+
+          <hr class="section-divider">
+
+          <div class="question-block" id="block-q1">
+            <label class="question-label required-label" id="label-q1">
+              1. Dans quel domaine du cinéma ou de l'audiovisuel évoluez-vous principalement ?
+            </label>
+
+            <div class="options-grid" role="radiogroup" aria-labelledby="label-q1">
+              <label class="option-card">
+                <input type="radio" name="domain_sector" value="pro_audio" required>
+                <span class="card-indicator"></span>
+                <div class="card-content">
+                  <span class="card-title">Post-production Audio</span>
+                  <span class="card-desc">Monteur son, Mixeur, Sound Designer, Chef opérateur son...</span>
+                </div>
+              </label>
+
+              <label class="option-card">
+                <input type="radio" name="domain_sector" value="cinema_other">
+                <span class="card-indicator"></span>
+                <div class="card-content">
+                  <span class="card-title">Autres métiers du cinéma</span>
+                  <span class="card-desc">Réalisation, Montage Image, Production, Étalonnage...</span>
+                </div>
+              </label>
+
+              <label class="option-card">
+                <input type="radio" name="domain_sector" value="public_other">
+                <span class="card-indicator"></span>
+                <div class="card-content">
+                  <span class="card-title">Je ne travaille pas dans ce secteur</span>
+                  <span class="card-desc">Spectateur / Autre domaine...</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="nav-controls">
+            <button type="button" class="btn-primary" id="btn-sec1-next" disabled>
+              <span>Commencer le questionnaire</span>
+              <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2 : POUR LES PROFESSIONNELS DU SON (DECOUPÉE EN SOUS-ÉCRANS) -->
+      <section id="section-2" class="survey-section hidden" aria-labelledby="title-sec2">
+        <div class="section-content">
+          <div class="section-header-wrap">
+            <div class="section-badge">BRANCHE PROFESSIONNELS DU SON</div>
+            <div class="substep-badge" id="substep-badge-sec2">Questions 1 à 3 sur 9</div>
+          </div>
+          <h2 id="title-sec2" class="section-title">L'IA dans votre métier (Pour les Pros du Son)</h2>
+          <p class="section-subtitle intro-context">
+            En tant que professionnel du son, vous êtes en première ligne face à l'automatisation des tâches de post-production. Je cherche à comprendre comment cela s'intègre dans votre quotidien.
+          </p>
+
+          <!-- SOUS-ÉCRAN 2.1 (Questions 1 à 3) -->
+          <div class="sub-step active" id="sec2-step-1" data-step="1">
+            <!-- Q2.1 -->
+            <div class="question-block">
+              <label class="question-label required-label">1. Quel est votre métier principal ?</label>
+              <div class="options-grid" role="radiogroup">
+                <label class="option-card compact">
+                  <input type="radio" name="pro_job" value="Monteur / Monteuse Son (Dialogues / FX)" required>
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Monteur / Monteuse Son (Dialogues / FX)</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="pro_job" value="Mixeur / Mixeuse">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Mixeur / Mixeuse</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="pro_job" value="Sound Designer">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Sound Designer</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="pro_job" value="Superviseur / Superviseuse Post-Production">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Superviseur / Superviseuse Post-Production</span>
+                </label>
+                <label class="option-card compact option-other">
+                  <input type="radio" name="pro_job" value="Autre">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Autre :</span>
+                  <input type="text" name="pro_job_other" class="inline-other-input" placeholder="Précisez votre métier...">
+                </label>
+              </div>
+            </div>
+
+            <!-- Q2.2 -->
+            <div class="question-block">
+              <label class="question-label required-label">2. Combien d'années d'expérience avez-vous en post-production ?</label>
+              <div class="options-grid" role="radiogroup">
+                <label class="option-card compact">
+                  <input type="radio" name="pro_experience" value="Moins de 2 ans (Étudiant/Junior)" required>
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Moins de 2 ans (Étudiant/Junior)</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="pro_experience" value="Entre 2 et 5 ans">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Entre 2 et 5 ans</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="pro_experience" value="Entre 5 et 10 ans">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Entre 5 et 10 ans</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="pro_experience" value="Plus de 10 ans">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Plus de 10 ans</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Q2.3 -->
+            <div class="question-block">
+              <label class="question-label">3. Pour quelles tâches déléguez-vous le plus à l'IA ? (Choix multiples)</label>
+              <div class="options-grid" role="group">
+                <label class="option-card checkbox-card">
+                  <input type="checkbox" name="pro_delegated_tasks" value="Nettoyage spectral (De-noise, De-click, etc.)">
+                  <span class="card-indicator square"></span>
+                  <span class="card-title">Nettoyage spectral (De-noise, De-click, etc.)</span>
+                </label>
+                <label class="option-card checkbox-card">
+                  <input type="checkbox" name="pro_delegated_tasks" value="Séparation de sources (Dialogue Isolate)">
+                  <span class="card-indicator square"></span>
+                  <span class="card-title">Séparation de sources (Dialogue Isolate)</span>
+                </label>
+                <label class="option-card checkbox-card">
+                  <input type="checkbox" name="pro_delegated_tasks" value="Dé-réverbération">
+                  <span class="card-indicator square"></span>
+                  <span class="card-title">Dé-réverbération</span>
+                </label>
+                <label class="option-card checkbox-card">
+                  <input type="checkbox" name="pro_delegated_tasks" value="Transcription texte (ex: Pro Tools 2024.6 / Whisper)">
+                  <span class="card-indicator square"></span>
+                  <span class="card-title">Transcription texte (ex: Pro Tools 2024.6 / Whisper)</span>
+                </label>
+                <label class="option-card checkbox-card">
+                  <input type="checkbox" name="pro_delegated_tasks" value="Génération/Reconstruction d'harmoniques (Spectral Recovery)">
+                  <span class="card-indicator square"></span>
+                  <span class="card-title">Génération/Reconstruction d'harmoniques (Spectral Recovery)</span>
+                </label>
+                <label class="option-card checkbox-card">
+                  <input type="checkbox" name="pro_delegated_tasks" value="Je n'utilise pas ces outils">
+                  <span class="card-indicator square"></span>
+                  <span class="card-title">Je n'utilise pas ces outils</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- SOUS-ÉCRAN 2.2 (Questions 4 à 6) -->
+          <div class="sub-step hidden" id="sec2-step-2" data-step="2">
+            <!-- Q2.4 MATRICE DE FRÉQUENCE (TABLEAU DESKTOP & CARTE EMPILÉES MOBILE) -->
+            <div class="question-block">
+              <label class="question-label">4. À quelle fréquence utilisez-vous ces outils intégrant de l'IA / Deep Learning ?</label>
+              
+              <!-- Version Tableau (Desktop ≥ 768px) -->
+              <div class="matrix-wrapper desktop-only">
+                <table class="matrix-table">
+                  <thead>
+                    <tr>
+                      <th>Outil / Fonctionnalité</th>
+                      <th>Tous les jours</th>
+                      <th>Quelques fois / sem</th>
+                      <th>De temps en temps</th>
+                      <th>Rarement</th>
+                      <th>Jamais</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="row-label">De-noise</td>
+                      <td><input type="radio" name="pro_freq_denoise" value="Tous les jours"></td>
+                      <td><input type="radio" name="pro_freq_denoise" value="Quelques fois par semaine"></td>
+                      <td><input type="radio" name="pro_freq_denoise" value="De temps en temps / par mois"></td>
+                      <td><input type="radio" name="pro_freq_denoise" value="Rarement"></td>
+                      <td><input type="radio" name="pro_freq_denoise" value="Jamais"></td>
+                    </tr>
+                    <tr>
+                      <td class="row-label">Dialogue Isolate</td>
+                      <td><input type="radio" name="pro_freq_isolate" value="Tous les jours"></td>
+                      <td><input type="radio" name="pro_freq_isolate" value="Quelques fois par semaine"></td>
+                      <td><input type="radio" name="pro_freq_isolate" value="De temps en temps / par mois"></td>
+                      <td><input type="radio" name="pro_freq_isolate" value="Rarement"></td>
+                      <td><input type="radio" name="pro_freq_isolate" value="Jamais"></td>
+                    </tr>
+                    <tr>
+                      <td class="row-label">Transcription</td>
+                      <td><input type="radio" name="pro_freq_transcription" value="Tous les jours"></td>
+                      <td><input type="radio" name="pro_freq_transcription" value="Quelques fois par semaine"></td>
+                      <td><input type="radio" name="pro_freq_transcription" value="De temps en temps / par mois"></td>
+                      <td><input type="radio" name="pro_freq_transcription" value="Rarement"></td>
+                      <td><input type="radio" name="pro_freq_transcription" value="Jamais"></td>
+                    </tr>
+                    <tr>
+                      <td class="row-label">De-Reverb</td>
+                      <td><input type="radio" name="pro_freq_dereverb" value="Tous les jours"></td>
+                      <td><input type="radio" name="pro_freq_dereverb" value="Quelques fois par semaine"></td>
+                      <td><input type="radio" name="pro_freq_dereverb" value="De temps en temps / par mois"></td>
+                      <td><input type="radio" name="pro_freq_dereverb" value="Rarement"></td>
+                      <td><input type="radio" name="pro_freq_dereverb" value="Jamais"></td>
+                    </tr>
+                    <tr>
+                      <td class="row-label">Spectral Recovery</td>
+                      <td><input type="radio" name="pro_freq_spectral_rec" value="Tous les jours"></td>
+                      <td><input type="radio" name="pro_freq_spectral_rec" value="Quelques fois par semaine"></td>
+                      <td><input type="radio" name="pro_freq_spectral_rec" value="De temps en temps / par mois"></td>
+                      <td><input type="radio" name="pro_freq_spectral_rec" value="Rarement"></td>
+                      <td><input type="radio" name="pro_freq_spectral_rec" value="Jamais"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Version Cartes Empilées (Mobile < 768px) -->
+              <div class="matrix-stacked-cards mobile-only">
+                <div class="matrix-card">
+                  <div class="matrix-card-title">De-noise</div>
+                  <div class="matrix-pill-group">
+                    <label class="pill-option"><input type="radio" name="pro_freq_denoise" value="Tous les jours"><span>Tous les jours</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_denoise" value="Quelques fois par semaine"><span>Quelques fois/sem</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_denoise" value="De temps en temps / par mois"><span>De temps en temps</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_denoise" value="Rarement"><span>Rarement</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_denoise" value="Jamais"><span>Jamais</span></label>
+                  </div>
+                </div>
+
+                <div class="matrix-card">
+                  <div class="matrix-card-title">Séparation de sources (Dialogue Isolate)</div>
+                  <div class="matrix-pill-group">
+                    <label class="pill-option"><input type="radio" name="pro_freq_isolate" value="Tous les jours"><span>Tous les jours</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_isolate" value="Quelques fois par semaine"><span>Quelques fois/sem</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_isolate" value="De temps en temps / par mois"><span>De temps en temps</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_isolate" value="Rarement"><span>Rarement</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_isolate" value="Jamais"><span>Jamais</span></label>
+                  </div>
+                </div>
+
+                <div class="matrix-card">
+                  <div class="matrix-card-title">Transcription texte</div>
+                  <div class="matrix-pill-group">
+                    <label class="pill-option"><input type="radio" name="pro_freq_transcription" value="Tous les jours"><span>Tous les jours</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_transcription" value="Quelques fois par semaine"><span>Quelques fois/sem</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_transcription" value="De temps en temps / par mois"><span>De temps en temps</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_transcription" value="Rarement"><span>Rarement</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_transcription" value="Jamais"><span>Jamais</span></label>
+                  </div>
+                </div>
+
+                <div class="matrix-card">
+                  <div class="matrix-card-title">Dé-réverbération (De-Reverb)</div>
+                  <div class="matrix-pill-group">
+                    <label class="pill-option"><input type="radio" name="pro_freq_dereverb" value="Tous les jours"><span>Tous les jours</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_dereverb" value="Quelques fois par semaine"><span>Quelques fois/sem</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_dereverb" value="De temps en temps / par mois"><span>De temps en temps</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_dereverb" value="Rarement"><span>Rarement</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_dereverb" value="Jamais"><span>Jamais</span></label>
+                  </div>
+                </div>
+
+                <div class="matrix-card">
+                  <div class="matrix-card-title">Spectral Recovery</div>
+                  <div class="matrix-pill-group">
+                    <label class="pill-option"><input type="radio" name="pro_freq_spectral_rec" value="Tous les jours"><span>Tous les jours</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_spectral_rec" value="Quelques fois par semaine"><span>Quelques fois/sem</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_spectral_rec" value="De temps en temps / par mois"><span>De temps en temps</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_spectral_rec" value="Rarement"><span>Rarement</span></label>
+                    <label class="pill-option"><input type="radio" name="pro_freq_spectral_rec" value="Jamais"><span>Jamais</span></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Q2.5 CUSTOM SLIDER (avec Feedback dynamique) -->
+            <div class="question-block">
+              <label class="question-label">
+                5. Êtes-vous d'accord avec cette affirmation : <br>
+                <em>"L'IA me fait gagner du temps sur le nettoyage ingrat, ce qui me permet de me concentrer davantage sur d'autres tâches."</em>
+              </label>
+              <div class="custom-slider-container" data-name="pro_time_gain_agree" data-value="3">
+                <div class="slider-feedback-box">
+                  <span class="slider-feedback-label">3/5 : Neutre / Mitigé</span>
+                </div>
+                <div class="slider-track-wrapper">
+                  <div class="slider-track">
+                    <div class="slider-fill"></div>
+                    <div class="slider-ticks">
+                      <span class="tick-mark" data-val="1"></span>
+                      <span class="tick-mark" data-val="2"></span>
+                      <span class="tick-mark active" data-val="3"></span>
+                      <span class="tick-mark" data-val="4"></span>
+                      <span class="tick-mark" data-val="5"></span>
+                    </div>
+                    <div class="slider-thumb">
+                      <span class="thumb-badge">3</span>
+                    </div>
+                  </div>
+                </div>
+                <input type="hidden" name="pro_time_gain_agree" value="3">
+              </div>
+            </div>
+
+            <!-- Q2.6 -->
+            <div class="question-block">
+              <label class="question-label">6. Ressentez-vous parfois le risque qu'un son "trop propre" (lissage du signal, disparition d'artefacts/présence) à cause du nettoyage automatisé ?</label>
+              <div class="options-grid" role="radiogroup">
+                <label class="option-card compact">
+                  <input type="radio" name="pro_overclean_risk" value="Oui, c'est un vrai problème esthétique">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Oui, c'est un vrai problème esthétique</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="pro_overclean_risk" value="Parfois, mais je corrige en dosant les algorithmes">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Parfois, mais je corrige en dosant les algorithmes</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="pro_overclean_risk" value="Non, je trouve que les outils actuels sont très respectueux du signal">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Non, je trouve que les outils actuels sont très respectueux du signal</span>
+                </label>
+                <label class="option-card compact option-other">
+                  <input type="radio" name="pro_overclean_risk" value="Autre">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Autre :</span>
+                  <input type="text" name="pro_overclean_risk_other" class="inline-other-input" placeholder="Précisez...">
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- SOUS-ÉCRAN 2.3 (Questions 7 à 9) -->
+          <div class="sub-step hidden" id="sec2-step-3" data-step="3">
+            <!-- Q2.7 CUSTOM SLIDER -->
+            <div class="question-block">
+              <label class="question-label">
+                7. Diriez-vous que la machine prend aujourd'hui le rôle de l'artisan, vous transformant en un superviseur chargé de brider ou de guider ses interventions ?
+              </label>
+              <div class="custom-slider-container" data-name="pro_supervisor_role" data-value="3">
+                <div class="slider-feedback-box">
+                  <span class="slider-feedback-label">3/5 : Neutre / Mitigé</span>
+                </div>
+                <div class="slider-track-wrapper">
+                  <div class="slider-track">
+                    <div class="slider-fill"></div>
+                    <div class="slider-ticks">
+                      <span class="tick-mark" data-val="1"></span>
+                      <span class="tick-mark" data-val="2"></span>
+                      <span class="tick-mark active" data-val="3"></span>
+                      <span class="tick-mark" data-val="4"></span>
+                      <span class="tick-mark" data-val="5"></span>
+                    </div>
+                    <div class="slider-thumb">
+                      <span class="thumb-badge">3</span>
+                    </div>
+                  </div>
+                </div>
+                <input type="hidden" name="pro_supervisor_role" value="3">
+              </div>
+            </div>
+
+            <!-- Q2.8 -->
+            <div class="question-block">
+              <label class="question-label">8. Selon vous, la généralisation de l'IA représente-t-elle un danger pour la formation de notre oreille critique (pour nous, les nouvelles générations) ?</label>
+              <div class="options-grid" role="radiogroup">
+                <label class="option-card compact">
+                  <input type="radio" name="pro_critical_ear_danger" value="Oui, fortement.">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Oui, fortement.</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="pro_critical_ear_danger" value="C'est un risque, la pédagogie doit s'adapter">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">C'est un risque, la pédagogie doit s'adapter</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="pro_critical_ear_danger" value="Non, elle formera juste différemment">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Non, elle formera juste différemment</span>
+                </label>
+                <label class="option-card compact option-other">
+                  <input type="radio" name="pro_critical_ear_danger" value="Autre">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Autre :</span>
+                  <input type="text" name="pro_critical_ear_other" class="inline-other-input" placeholder="Précisez...">
+                </label>
+              </div>
+            </div>
+
+            <!-- Q2.9 -->
+            <div class="question-block">
+              <label class="question-label">9. Quels domaines de la post-production audio vous semblent les plus résistants à l'automatisation par l'IA sur le long terme ? (Choix multiples)</label>
+              <div class="options-grid" role="group">
+                <label class="option-card checkbox-card">
+                  <input type="checkbox" name="pro_resistant_fields" value="L'intention artistique des choix de mixage">
+                  <span class="card-indicator square"></span>
+                  <span class="card-title">L'intention artistique des choix de mixage</span>
+                </label>
+                <label class="option-card checkbox-card">
+                  <input type="checkbox" name="pro_resistant_fields" value="La gestion des relations avec les réalisateurs">
+                  <span class="card-indicator square"></span>
+                  <span class="card-title">La gestion des relations avec les réalisateurs</span>
+                </label>
+                <label class="option-card checkbox-card">
+                  <input type="checkbox" name="pro_resistant_fields" value="Le Sound Design créatif">
+                  <span class="card-indicator square"></span>
+                  <span class="card-title">Le Sound Design créatif</span>
+                </label>
+                <label class="option-card checkbox-card">
+                  <input type="checkbox" name="pro_resistant_fields" value="Le montage de dialogues">
+                  <span class="card-indicator square"></span>
+                  <span class="card-title">Le montage de dialogues</span>
+                </label>
+                <label class="option-card checkbox-card">
+                  <input type="checkbox" name="pro_resistant_fields" value="Aucun, tout est automatisable">
+                  <span class="card-indicator square"></span>
+                  <span class="card-title">Aucun, tout est automatisable</span>
+                </label>
+                <label class="option-card checkbox-card option-other">
+                  <input type="checkbox" name="pro_resistant_fields" value="Autre">
+                  <span class="card-indicator square"></span>
+                  <span class="card-title">Autre :</span>
+                  <input type="text" name="pro_resistant_fields_other" class="inline-other-input" placeholder="Précisez...">
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="nav-controls">
+            <button type="button" class="btn-secondary btn-back-substep" id="btn-sec2-back">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
+              <span>Retour</span>
+            </button>
+            <button type="button" class="btn-primary" id="btn-sec2-next">
+              <span>Suivant</span>
+              <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3 : PERCEPTION POUR L'IMAGE ET AUTRES COLLABORATEURS (DECOUPÉE EN SOUS-ÉCRANS) -->
+      <section id="section-3" class="survey-section hidden" aria-labelledby="title-sec3">
+        <div class="section-content">
+          <div class="section-header-wrap">
+            <div class="section-badge copper">BRANCHE ÉQUIPE IMAGE & AUTRES COLLABORATEURS</div>
+            <div class="substep-badge copper" id="substep-badge-sec3">Questions 1 à 3 sur 9</div>
+          </div>
+          <h2 id="title-sec3" class="section-title">Perception de l'IA sonore (Pour les métiers de l'Image et Autres)</h2>
+          <p class="section-subtitle intro-context">
+            L'Intelligence Artificielle permet aujourd'hui de nettoyer des dialogues d'un film de manière quasi-automatique. Nous souhaitons connaître votre ressenti en tant que collaborateur ou spectateur.
+          </p>
+
+          <!-- SOUS-ÉCRAN 3.1 (Questions 1 à 3) -->
+          <div class="sub-step active" id="sec3-step-1" data-step="1">
+            <!-- Q3.1 -->
+            <div class="question-block">
+              <label class="question-label required-label">1. Quel est votre métier ou votre domaine d'activité principal ?</label>
+              <div class="options-grid" role="radiogroup">
+                <label class="option-card compact">
+                  <input type="radio" name="public_job" value="Réalisation / Mise en scène" required>
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Réalisation / Mise en scène</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="public_job" value="Montage Image / Post-production visuelle (Étalonnage, VFX...)">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Montage Image / Post-production visuelle (Étalonnage, VFX...)</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="public_job" value="Production / Distribution">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Production / Distribution</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="public_job" value="Je ne travaille pas dans l'audiovisuel mais je suis passionné">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Je ne travaille pas dans l'audiovisuel mais je suis passionné</span>
+                </label>
+                <label class="option-card compact option-other">
+                  <input type="radio" name="public_job" value="Autre">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Autre :</span>
+                  <input type="text" name="public_job_other" class="inline-other-input" placeholder="Précisez votre métier...">
+                </label>
+              </div>
+            </div>
+
+            <!-- Q3.2 CUSTOM SLIDER -->
+            <div class="question-block">
+              <label class="question-label">2. Au cinéma ou à la télévision, prêtez-vous une attention particulière à la qualité du son et des dialogues ?</label>
+              <div class="custom-slider-container" data-name="public_sound_attention" data-value="3">
+                <div class="slider-feedback-box">
+                  <span class="slider-feedback-label">3/5 : Moyennement attentif</span>
+                </div>
+                <div class="slider-track-wrapper">
+                  <div class="slider-track">
+                    <div class="slider-fill"></div>
+                    <div class="slider-ticks">
+                      <span class="tick-mark" data-val="1"></span>
+                      <span class="tick-mark" data-val="2"></span>
+                      <span class="tick-mark active" data-val="3"></span>
+                      <span class="tick-mark" data-val="4"></span>
+                      <span class="tick-mark" data-val="5"></span>
+                    </div>
+                    <div class="slider-thumb">
+                      <span class="thumb-badge">3</span>
+                    </div>
+                  </div>
+                </div>
+                <input type="hidden" name="public_sound_attention" value="3">
+              </div>
+            </div>
+
+            <!-- Q3.3 -->
+            <div class="question-block">
+              <label class="question-label">3. Avez-vous déjà été gêné par un son "trop nettoyé" ou artificiel (voix robotique, disparition totale des bruits d'ambiance) dans un film ou une série récente ?</label>
+              <div class="options-grid" role="radiogroup">
+                <label class="option-card compact">
+                  <input type="radio" name="public_bothered_overclean" value="Oui, cela m'a sorti de l'œuvre">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Oui, cela m'a sorti de l'œuvre</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="public_bothered_overclean" value="Je l'ai remarqué, mais sans être gêné">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Je l'ai remarqué, mais sans être gêné</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="public_bothered_overclean" value="Non, je n'y prête pas attention ou je n'ai jamais remarqué">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Non, je n'y prête pas attention ou je n'ai jamais remarqué</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- SOUS-ÉCRAN 3.2 (Questions 4 à 6) -->
+          <div class="sub-step hidden" id="sec3-step-2" data-step="2">
+            <!-- Q3.4 CUSTOM SLIDER -->
+            <div class="question-block">
+              <label class="question-label">4. Face à un dialogue enregistré dans un environnement bruyant, que préférez-vous entendre ?</label>
+              <div class="custom-slider-container" data-name="public_dialogue_preference" data-value="3">
+                <div class="slider-feedback-box">
+                  <span class="slider-feedback-label">3/5 : Équilibre propreté / naturel</span>
+                </div>
+                <div class="slider-track-wrapper">
+                  <div class="slider-track">
+                    <div class="slider-fill"></div>
+                    <div class="slider-ticks">
+                      <span class="tick-mark" data-val="1"></span>
+                      <span class="tick-mark" data-val="2"></span>
+                      <span class="tick-mark active" data-val="3"></span>
+                      <span class="tick-mark" data-val="4"></span>
+                      <span class="tick-mark" data-val="5"></span>
+                    </div>
+                    <div class="slider-thumb">
+                      <span class="thumb-badge">3</span>
+                    </div>
+                  </div>
+                </div>
+                <input type="hidden" name="public_dialogue_preference" value="3">
+              </div>
+            </div>
+
+            <!-- Q3.5 -->
+            <div class="question-block">
+              <label class="question-label">(Si vous êtes professionnel du cinéma) Confieriez-vous le nettoyage sonore de vos projets à une IA de manière 100% automatique pour gagner du temps et du budget ?</label>
+              <div class="options-grid" role="radiogroup">
+                <label class="option-card compact">
+                  <input type="radio" name="public_delegate_ai_full" value="Oui, si le résultat est correct, c'est du temps de gagné.">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Oui, si le résultat est correct, c'est du temps de gagné.</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="public_delegate_ai_full" value="Seulement pour un pré-mix ou un premier montage, mais je veux qu'un humain valide la fin.">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Seulement pour un pré-mix ou un premier montage, mais je veux qu'un humain valide la fin.</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="public_delegate_ai_full" value="Non, le traitement du son nécessite une sensibilité artistique humaine.">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Non, le traitement du son nécessite une sensibilité artistique humaine.</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="public_delegate_ai_full" value="Je ne suis pas professionnel du cinéma.">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Je ne suis pas professionnel du cinéma.</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Q3.6 -->
+            <div class="question-block">
+              <label class="question-label">(Si vous êtes monteur/monteuse image) Les logiciels de montage vidéo (Premiere Pro, DaVinci Resolve) intègrent désormais des outils IA de nettoyage audio en un clic (Voice Isolation, Enhance Speech). Les utilisez-vous pour vos montages ?</label>
+              <div class="options-grid" role="radiogroup">
+                <label class="option-card compact">
+                  <input type="radio" name="public_editor_ai_use" value="Oui, systématiquement, je donne une maquette 'propre' au réalisateur/producteur.">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Oui, systématiquement, je donne une maquette "propre" au réalisateur/producteur.</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="public_editor_ai_use" value="Parfois, juste pour rendre une prise intelligible si elle est vraiment mauvaise.">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Parfois, juste pour rendre une prise intelligible si elle est vraiment mauvaise.</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="public_editor_ai_use" value="Non, je n'y touche pas, je laisse cela au département post-production son.">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Non, je n'y touche pas, je laisse cela au département post-production son.</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="public_editor_ai_use" value="Je ne suis pas concerné(e) par cette étape.">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Je ne suis pas concerné(e) par cette étape.</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- SOUS-ÉCRAN 3.3 (Questions 7 à 9) -->
+          <div class="sub-step hidden" id="sec3-step-3" data-step="3">
+            <!-- Q3.7 -->
+            <div class="question-block">
+              <label class="question-label">7. Pensez-vous que l'arrivée de l'IA (qui permet de "sauver" des dialogues extrêmement "bruités") a modifié le comportement sur les plateaux de tournage ?</label>
+              <div class="options-grid" role="radiogroup">
+                <label class="option-card compact">
+                  <input type="radio" name="public_set_behavior_changed" value="Oui, on a tendance à se dire de plus en plus 'on verra en post-production'.">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Oui, on a tendance à se dire de plus en plus "on verra en post-production".</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="public_set_behavior_changed" value="Non, l'exigence de la prise de son à la source reste la même.">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Non, l'exigence de la prise de son à la source reste la même.</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="public_set_behavior_changed" value="Je n'ai pas l'expérience des plateaux de tournage pour en juger.">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Je n'ai pas l'expérience des plateaux de tournage pour en juger.</span>
+                </label>
+                <label class="option-card compact option-other">
+                  <input type="radio" name="public_set_behavior_changed" value="Autre">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Autre :</span>
+                  <input type="text" name="public_set_behavior_other" class="inline-other-input" placeholder="Précisez...">
+                </label>
+              </div>
+            </div>
+
+            <!-- Q3.8 CUSTOM SLIDER -->
+            <div class="question-block">
+              <label class="question-label">8. Dans un film, quelle importance accordez-vous à la "room tone" (la présence sonore propre à un lieu, les bruits de fond naturels, l'acoustique de la pièce) pour transmettre une émotion ?</label>
+              <div class="custom-slider-container" data-name="public_room_tone_importance" data-value="3">
+                <div class="slider-feedback-box">
+                  <span class="slider-feedback-label">3/5 : Importance moyenne</span>
+                </div>
+                <div class="slider-track-wrapper">
+                  <div class="slider-track">
+                    <div class="slider-fill"></div>
+                    <div class="slider-ticks">
+                      <span class="tick-mark" data-val="1"></span>
+                      <span class="tick-mark" data-val="2"></span>
+                      <span class="tick-mark active" data-val="3"></span>
+                      <span class="tick-mark" data-val="4"></span>
+                      <span class="tick-mark" data-val="5"></span>
+                    </div>
+                    <div class="slider-thumb">
+                      <span class="thumb-badge">3</span>
+                    </div>
+                  </div>
+                </div>
+                <input type="hidden" name="public_room_tone_importance" value="3">
+              </div>
+            </div>
+
+            <!-- Q3.9 -->
+            <div class="question-block">
+              <label class="question-label">9. L'IA permet de gagner un temps considérable sur le nettoyage des pistes. En tant que collaborateur ou producteur, comment souhaiteriez-vous que ce temps gagné soit réinvesti par l'équipe son ?</label>
+              <div class="options-grid" role="radiogroup">
+                <label class="option-card compact">
+                  <input type="radio" name="public_saved_time_reinvestment" value="Principalement pour réduire le temps global de post-production (donc le budget).">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Principalement pour réduire le temps global de post-production (donc le budget).</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="public_saved_time_reinvestment" value="Pour allouer ce temps à une démarche plus artistique (Sound design, spatialisation, mix).">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Pour allouer ce temps à une démarche plus artistique (Sound design, spatialisation, mix).</span>
+                </label>
+                <label class="option-card compact">
+                  <input type="radio" name="public_saved_time_reinvestment" value="Un compromis entre économie de budget et amélioration artistique.">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Un compromis entre économie de budget et amélioration artistique.</span>
+                </label>
+                <label class="option-card compact option-other">
+                  <input type="radio" name="public_saved_time_reinvestment" value="Autre">
+                  <span class="card-indicator"></span>
+                  <span class="card-title">Autre :</span>
+                  <input type="text" name="public_saved_time_other" class="inline-other-input" placeholder="Précisez...">
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="nav-controls">
+            <button type="button" class="btn-secondary btn-back-substep" id="btn-sec3-back">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
+              <span>Retour</span>
+            </button>
+            <button type="button" class="btn-primary" id="btn-sec3-next">
+              <span>Suivant</span>
+              <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4 : CONCLUSION GLOBALE (TOUS PUBLICS) -->
+      <section id="section-4" class="survey-section hidden" aria-labelledby="title-sec4">
+        <div class="section-content">
+          <div class="section-badge cyan">CONCLUSION GLOBALE & PERSPECTIVES</div>
+          <h2 id="title-sec4" class="section-title">Merci d'avoir pris le temps de répondre !</h2>
+          <p class="section-subtitle">
+            Pour terminer, prenons un peu de recul. Que vous soyez professionnel du cinéma ou simple spectateur, votre avis sur la place de l'Intelligence Artificielle dans la création artistique m'intéresse.
+          </p>
+
+          <!-- Q4.1 -->
+          <div class="question-block">
+            <label class="question-label">1. De manière générale, comment percevez-vous l'arrivée de l'Intelligence Artificielle dans l'art et le cinéma ?</label>
+            <div class="options-grid" role="radiogroup">
+              <label class="option-card compact">
+                <input type="radio" name="global_ai_perception" value="Principalement comme une menace pour la créativité et l'humain.">
+                <span class="card-indicator"></span>
+                <span class="card-title">Principalement comme une menace pour la créativité et l'humain.</span>
+              </label>
+              <label class="option-card compact">
+                <input type="radio" name="global_ai_perception" value="Comme une simple évolution technologique (un nouvel outil, ni bon ni mauvais en soi).">
+                <span class="card-indicator"></span>
+                <span class="card-title">Comme une simple évolution technologique (un nouvel outil, ni bon ni mauvais en soi).</span>
+              </label>
+              <label class="option-card compact">
+                <input type="radio" name="global_ai_perception" value="Principalement comme une opportunité pour repousser les limites de la création.">
+                <span class="card-indicator"></span>
+                <span class="card-title">Principalement comme une opportunité pour repousser les limites de la création.</span>
+              </label>
+              <label class="option-card compact">
+                <input type="radio" name="global_ai_perception" value="Je n'ai pas vraiment d'opinion sur le sujet.">
+                <span class="card-indicator"></span>
+                <span class="card-title">Je n'ai pas vraiment d'opinion sur le sujet.</span>
+              </label>
+              <label class="option-card compact option-other">
+                <input type="radio" name="global_ai_perception" value="Autre">
+                <span class="card-indicator"></span>
+                <span class="card-title">Autre :</span>
+                <input type="text" name="global_ai_perception_other" class="inline-other-input" placeholder="Précisez...">
+              </label>
+            </div>
+          </div>
+
+          <!-- Q4.2 CUSTOM SLIDER -->
+          <div class="question-block">
+            <label class="question-label">
+              2. Êtes-vous d'accord avec l'affirmation suivante : <br>
+              <em>"Une œuvre techniquement imparfaite mais 100% humaine sera toujours plus touchante qu'une œuvre techniquement parfaite mais assistée par l'IA."</em>
+            </label>
+            <div class="custom-slider-container" data-name="global_human_imperfection_agree" data-value="3">
+              <div class="slider-feedback-box">
+                <span class="slider-feedback-label">3/5 : Neutre / Mitigé</span>
+              </div>
+              <div class="slider-track-wrapper">
+                <div class="slider-track">
+                  <div class="slider-fill"></div>
+                  <div class="slider-ticks">
+                    <span class="tick-mark" data-val="1"></span>
+                    <span class="tick-mark" data-val="2"></span>
+                    <span class="tick-mark active" data-val="3"></span>
+                    <span class="tick-mark" data-val="4"></span>
+                    <span class="tick-mark" data-val="5"></span>
+                  </div>
+                  <div class="slider-thumb">
+                    <span class="thumb-badge">3</span>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" name="global_human_imperfection_agree" value="3">
+            </div>
+          </div>
+
+          <!-- Q4.3 (avec Chips de suggestion) -->
+          <div class="question-block">
+            <label class="question-label" for="global-final-comment">
+              3. Un dernier mot, une crainte, ou un espoir concernant l'avenir de l'IA dans l'audiovisuel ?
+            </label>
+            <div class="suggestion-chips">
+              <button type="button" class="chip-btn" data-prefix="J'ai un espoir : ">🚀 J'ai un espoir</button>
+              <button type="button" class="chip-btn" data-prefix="Ma principale crainte est : ">⚠️ J'ai une crainte</button>
+              <button type="button" class="chip-btn" data-prefix="Je suis plutôt neutre car : ">⚖️ Plutôt neutre</button>
+            </div>
+            <textarea id="global-final-comment" name="global_final_comment" class="studio-textarea" rows="4" placeholder="Votre réflexion libre..."></textarea>
+          </div>
+
+          <div class="nav-controls">
+            <button type="button" class="btn-secondary btn-back" id="btn-sec4-back">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
+              <span>Retour</span>
+            </button>
+            <button type="button" class="btn-submit" id="btn-submit">
+              <span class="btn-text">Transmettre mes réponses</span>
+              <span class="spinner-loader hidden" id="submit-spinner" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODAL / ÉCRAN DE CONFIRMATION & FALLBACK -->
+      <section id="section-success" class="survey-section hidden" aria-labelledby="title-success">
+        <div class="section-content text-center">
+          <div class="success-icon-wrap">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+          <h2 id="title-success" class="section-title">Merci pour votre contribution !</h2>
+          <p class="section-subtitle" id="success-message-text">
+            Vos retours de terrain sont précieux et nourriront directement ce rapport de veille 3A CAV-SD sur l'évolution de la posture artistique de l'ingénieur du son.
+          </p>
+
+          <div id="fallback-container" class="fallback-box hidden">
+            <div class="fallback-alert">
+              <span class="alert-icon">ℹ️</span>
+              <p id="fallback-message-text" class="fallback-msg">
+                L'envoi automatique est en mode local. Vos réponses ont été sauvegardées et téléchargées sur votre appareil !
+              </p>
+            </div>
+            <div class="fallback-actions">
+              <button type="button" class="btn-secondary" id="btn-copy-json">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copier le JSON</span>
+              </button>
+              <button type="button" class="btn-secondary" id="btn-download-json">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span>Re-télécharger (.json)</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="success-footer">
+            <p class="footer-credit">Étude de Veille Académique — 3A CAV-SD Cinéma & Son (3iS)</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Overlay de chargement (Audio Waveform Loader) -->
+  <div id="loading-overlay" class="loading-overlay hidden" aria-live="polite">
+    <div class="loader-content">
+      <div class="audio-wave">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <p class="loading-text">Transmission de vos réponses en cours...</p>
+      <p class="loading-subtext">Merci de patienter quelques secondes</p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
