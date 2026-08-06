@@ -801,7 +801,7 @@ function showSuccessScreen(isFallback = false, userBranch = "public_other") {
     if (userBranch === "pro") {
       msgEl.textContent = "Un grand merci pour ce retour d'expérience précieux ! En tant que professionnel du son, votre vision du terrain nourrit directement l'analyse centrale de mon mémoire d'ingénierie du son à 3iS.";
     } else {
-      msgEl.textContent = "Merci beaucoup pour votre temps ! Votre regard extérieur sur la perception du son et de l'IA au cinéma est essentiel pour mesurer l'impact de ces technologies sur le grand public et les collaborateurs du 7ᵉ art.";
+      msgEl.textContent = "Merci mille fois pour votre temps ! Mesurer l'impact de l'IA ne peut pas se faire sans l'avis des spectateurs et des collaborateurs du milieu.";
     }
   }
 
