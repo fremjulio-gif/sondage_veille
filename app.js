@@ -15,47 +15,47 @@ const state = {
   answers: {}
 };
 
-// Libellés dynamiques qualitatifs pour les échelles 1 à 5
+// Libellés dynamiques qualitatifs pour les échelles 1 à 5 (Charte éditoriale 3iS)
 const SLIDER_FEEDBACK_MAPS = {
   pro_time_gain_agree: {
     1: "1/5 : Pas du tout d'accord",
     2: "2/5 : Plutôt pas d'accord",
-    3: "3/5 : Neutre / Mitigé",
+    3: "3/5 : Mitigé",
     4: "4/5 : Plutôt d'accord",
     5: "5/5 : Tout à fait d'accord"
   },
   pro_supervisor_role: {
     1: "1/5 : Pas du tout d'accord",
     2: "2/5 : Plutôt pas d'accord",
-    3: "3/5 : Neutre / Mitigé",
+    3: "3/5 : Évolution naturelle",
     4: "4/5 : Plutôt d'accord",
     5: "5/5 : Tout à fait d'accord"
   },
   public_sound_attention: {
-    1: "1/5 : Pas du tout attentif",
+    1: "1/5 : Secondaire",
     2: "2/5 : Peu attentif",
-    3: "3/5 : Moyennement attentif",
+    3: "3/5 : Attentif",
     4: "4/5 : Très attentif",
-    5: "5/5 : Énormément attentif"
+    5: "5/5 : Priorité absolue"
   },
   public_dialogue_preference: {
-    1: "1/5 : Intelligible & froide (100% propre)",
+    1: "1/5 : Voix 100% intelligible (quitte à paraître traitée)",
     2: "2/5 : Plutôt propre",
     3: "3/5 : Équilibre propreté / naturel",
     4: "4/5 : Plutôt naturel",
-    5: "5/5 : Naturel avec imperfections"
+    5: "5/5 : Prise naturelle avec ses imperfections de tournage"
   },
   public_room_tone_importance: {
-    1: "1/5 : Aucune importance",
+    1: "1/5 : Aucune (seul le texte compte)",
     2: "2/5 : Faible importance",
     3: "3/5 : Importance moyenne",
-    4: "4/5 : Très important",
-    5: "5/5 : Primordial (crée l'atmosphère)"
+    4: "4/5 : Très importante",
+    5: "5/5 : Indispensable pour créer une vraie atmosphère"
   },
   global_human_imperfection_agree: {
     1: "1/5 : Pas du tout d'accord",
     2: "2/5 : Plutôt pas d'accord",
-    3: "3/5 : Neutre / Mitigé",
+    3: "3/5 : Nuancé",
     4: "4/5 : Plutôt d'accord",
     5: "5/5 : Tout à fait d'accord"
   }
@@ -179,7 +179,6 @@ function showSubstep(sectionId, stepNum) {
     }
   });
 
-  // Mettre à jour le badge de sous-étape
   const badge = document.getElementById(`substep-badge-${sectionId === "section-2" ? "sec2" : "sec3"}`);
   if (badge) {
     if (stepNum === 1) badge.textContent = "Questions 1 à 3 sur 9";
@@ -187,7 +186,6 @@ function showSubstep(sectionId, stepNum) {
     else if (stepNum === 3) badge.textContent = "Questions 7 à 9 sur 9";
   }
 
-  // Changer le texte du bouton Suivant sur le dernier sous-écran
   const nextBtn = section.querySelector(".btn-primary");
   if (nextBtn) {
     const spanText = nextBtn.querySelector("span");
@@ -799,9 +797,9 @@ function showSuccessScreen(isFallback = false, userBranch = "public_other") {
 
   if (msgEl) {
     if (userBranch === "pro") {
-      msgEl.textContent = "Un grand merci pour ce retour d'expérience précieux ! En tant que professionnel du son, votre vision du terrain nourrit directement l'analyse centrale de mon mémoire d'ingénierie du son à 3iS.";
+      msgEl.innerHTML = "<strong>🎉 Merci infiniment pour ce retour du terrain !</strong><br><br>Avoir la vision de professionnels en activité est ce qui permet de donner une vraie valeur à ce travail de fin d'études à 3iS. Ces données vont directement nourrir l'analyse de notre mémoire.<br><br><em>Au plaisir d'en échanger autour d'une console ou d'un projet !</em>";
     } else {
-      msgEl.textContent = "Merci mille fois pour votre temps ! Mesurer l'impact de l'IA ne peut pas se faire sans l'avis des spectateurs et des collaborateurs du milieu.";
+      msgEl.innerHTML = "<strong>🎉 Merci beaucoup pour le coup de main !</strong><br><br>Mesurer l'impact de l'IA ne peut pas se faire sans le regard de ceux qui font l'image et de ceux qui vivent les films en salle. Ces retours apportent un éclairage précieux pour compléter notre étude.<br><br><em>Bonne continuation et séances de cinéma !</em>";
     }
   }
 
