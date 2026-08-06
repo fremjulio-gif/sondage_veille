@@ -293,49 +293,60 @@ html, body {
 .vu-segment.copper { background-color: var(--copper-accent); opacity: 0.7; }
 
 /* ==========================================================================
-   RUBAN PROFILER STICKY
+   RUBAN PROFILER STICKY (ULTRA-MINIMALISTE & DISCRET)
    ========================================================================== */
 .user-profiler-ribbon {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 24px;
-  background: rgba(0, 0, 0, 0.3);
-  border-bottom: 1px solid var(--border-subtle);
+  gap: 8px;
+  padding: 4px 14px;
+  background: rgba(255, 255, 255, 0.015);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.68rem;
   overflow-x: auto;
   white-space: nowrap;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.user-profiler-ribbon::-webkit-scrollbar {
+  display: none;
 }
 
 .ribbon-label {
   color: var(--text-dim);
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  font-size: 0.62rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.5;
   flex-shrink: 0;
 }
 
 .ribbon-tags {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .tag-item {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: rgba(0, 229, 255, 0.08);
-  border: 1px solid rgba(0, 229, 255, 0.2);
-  color: var(--cyan-accent);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
   padding: 2px 8px;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 0.72rem;
-  animation: tagPop 0.25s ease-out;
+  animation: tagPop 0.2s ease-out;
 }
 
 @keyframes tagPop {
-  0% { transform: scale(0.8); opacity: 0; }
+  0% { transform: scale(0.9); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
 }
 
