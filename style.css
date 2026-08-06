@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700&display=swap');
+
 /* ==========================================================================
    CHARTE GRAPHIQUE — "MINIMALIST DARK STUDIO GLASSMORPHISM"
    Fichier : style.css
@@ -21,12 +23,9 @@
   --copper-subtle: rgba(230, 104, 0, 0.12);
   --green-accent: #10b981;
 
-  /* Typographie & Textes */
-  --text-main: #f1f5f9;
-  --text-muted: #78889b;
-  --text-dim: #475569;
-
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Typographie Modern & Tech */
+  --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* Modèle de composant */
@@ -52,11 +51,34 @@ html, body {
   min-height: 100vh;
   background-color: var(--bg-deep);
   color: var(--text-main);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
+  font-weight: 400;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Hiérarchie Typographique Modern Studio */
+h1, h2, h3, h4, .main-title, .section-title, .recap-modal-title, .success-headline {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+h1, .main-title {
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+}
+
+h2, .section-title {
+  font-size: clamp(1.25rem, 3vw, 1.7rem);
+}
+
+h3, .recap-modal-title {
+  font-size: 1.15rem;
 }
 
 /* ==========================================================================
@@ -1691,8 +1713,14 @@ html, body {
   }
 
   .section-subtitle {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
     margin-bottom: 18px;
+  }
+
+  .intro-paragraph, .card-desc, .fallback-msg {
+    font-size: 0.9rem;
+    line-height: 1.55;
   }
 
   .nav-controls {
