@@ -1287,7 +1287,27 @@ function showSuccessScreen(isFallback = false, userBranch = "public_other") {
   if (meterAi) meterAi.style.width = `${aiPct}%`;
   if (meterValAi) meterValAi.textContent = `${aiPct}%`;
 
-  // 3. Animation séquencée Staggered d'arrivée
+  // 3. Messages de remerciements personnalisés au singulier (Jules / Travail individuel)
+  const msgEl = document.getElementById("success-message-text");
+
+  const proVariants = [
+    "<strong>🎉 Un grand merci pour ce retour du terrain !</strong><br><br>Avoir la vision de professionnels en activité est ce qui permet de donner une vraie valeur à mon travail de fin d'études à 3iS. Ces données vont directement nourrir mon analyse.<br><br><em>Au plaisir d'en échanger autour d'une console ou d'un projet !</em>",
+    "<strong>🎉 Merci beaucoup d'avoir partagé votre expérience !</strong><br><br>Votre retour de terrain est essentiel pour dresser un panorama fidèle de l'intégration de l'IA en post-production. Merci pour le temps accordé à mon travail académique.<br><br><em>Bonnes sessions et à bientôt !</em>",
+    "<strong>🎉 Un grand merci pour votre contribution !</strong><br><br>Votre perspective professionnelle apporte un éclairage indispensable pour comprendre l'évolution de la posture artistique de l'ingénieur du son.<br><br><em>Au plaisir de croiser vos chemins en studio !</em>"
+  ];
+
+  const publicVariants = [
+    "<strong>🎉 Merci beaucoup pour le coup de main !</strong><br><br>Mesurer l'impact de l'IA ne peut pas se faire sans le regard de ceux qui font l'image et de ceux qui vivent les films en salle. Vos retours apportent un éclairage précieux pour compléter mon étude.<br><br><em>Bonne continuation et séances de cinéma !</em>",
+    "<strong>🎉 Merci infiniment pour votre temps !</strong><br><br>Votre vision en tant que collaborateur ou spectateur m'aide à mesurer la perception réelle du son et de ses évolutions technologiques.<br><br><em>Très belles projections à vous !</em>"
+  ];
+
+  if (msgEl) {
+    const variants = userBranch === "pro" ? proVariants : publicVariants;
+    const randomMsg = variants[Math.floor(Math.random() * variants.length)];
+    msgEl.innerHTML = randomMsg;
+  }
+
+  // 4. Animation séquencée Staggered d'arrivée
   navigateToSection("section-success");
 
   const successEl = document.getElementById("section-success");
