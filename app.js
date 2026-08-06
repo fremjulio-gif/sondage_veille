@@ -1081,6 +1081,55 @@ function populateRecapModal() {
   container.innerHTML = items.length > 0 ? items.join("") : "<p class='recap-q'>Aucune donnée enregistrée.</p>";
 }
 
+// Dictionnaire des noms condensés pour les colonnes Google Sheets
+const QUESTION_LABELS = {
+  submittedAt: "Date & Heure d'envoi",
+  userBranch: "Branche / Parcours",
+  domain_sector: "Activité principale",
+  pro_job: "Métier en Post-Prod",
+  pro_job_other: "Métier (Autre)",
+  pro_experience: "Expérience (Années)",
+  pro_delegated_tasks: "Tâches confiées à l'IA",
+  pro_freq_denoise: "Fréquence De-noise",
+  pro_freq_isolate: "Fréquence Dialogue Isolate",
+  pro_freq_transcription: "Fréquence Transcription",
+  pro_freq_dereverb: "Fréquence De-reverb",
+  pro_freq_spectral_rec: "Fréquence Spectral Recovery",
+  pro_time_gain_agree: "Gain de temps vs création",
+  pro_overclean_risk: "Risque de son trop nettoyé",
+  pro_overclean_risk_other: "Risque de son (Autre)",
+  pro_supervisor_role: "Glissement vers rôle de superviseur",
+  pro_critical_ear_danger: "Danger pour l'oreille critique",
+  pro_critical_ear_other: "Danger oreille (Autre)",
+  pro_resistant_fields: "Domaines préservés de l'IA",
+  pro_resistant_fields_other: "Domaines préservés (Autre)",
+  public_job: "Rôle (Image / Prod / Public)",
+  public_job_other: "Rôle Image (Autre)",
+  public_sound_attention: "Importance confort dialogues",
+  public_bothered_overclean: "Son trop nettoyé remarqué",
+  public_dialogue_preference: "Préférence Intelligibilité vs Naturel",
+  public_delegate_ai_full: "Restauration 100% auto",
+  public_editor_ai_use: "Outils IA utilisés au montage image",
+  public_set_behavior_changed: "Impact sur la rigueur de tournage",
+  public_set_behavior_other: "Impact tournage (Autre)",
+  public_room_tone_importance: "Valeur attribuée au Room Tone",
+  public_saved_time_reinvestment: "Réinvestissement du temps gagné",
+  public_saved_time_other: "Réinvestissement (Autre)",
+  global_ai_perception: "Perception globale de l'IA",
+  global_ai_perception_other: "Perception globale (Autre)",
+  global_human_imperfection_agree: "Sensibilité humaine vs perfection IA",
+  global_final_comment: "Mot de la fin / Remarque libre"
+};
+
+function formatPayloadForSheets(rawAnswers) {
+  const formattedData = {};
+  for (const [key, value] of Object.entries(rawAnswers)) {
+    const label = QUESTION_LABELS[key] ? `${QUESTION_LABELS[key]} (${key})` : key;
+    formattedData[label] = Array.isArray(value) ? value.join(', ') : (value ?? "");
+  }
+  return formattedData;
+}
+
 /* ==========================================================================
    9. SOUMISSION WEBHOOK & ÉCRAN DE CONFIRMATION CÉLÉBRATION (CONFETTI)
    ========================================================================== */
@@ -1103,7 +1152,7 @@ async function handleFormSubmission() {
 
   const getArrayVal = (val) => Array.isArray(val) ? val.join(", ") : (val || "");
 
-  const payload = {
+  const rawPayload = {
     submittedAt: new Date().toISOString(),
     userBranch: userBranch,
     domain_sector: answers.domain_sector || "N/A",
@@ -1141,6 +1190,8 @@ async function handleFormSubmission() {
     global_human_imperfection_agree: answers.global_human_imperfection_agree || "",
     global_final_comment: answers.global_final_comment || ""
   };
+
+  const payload = formatPayloadForSheets(rawPayload);
 
   if (btnSubmit) btnSubmit.disabled = true;
   if (spinner) spinner.classList.remove("hidden");
