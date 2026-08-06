@@ -6,22 +6,27 @@
    ========================================================================== */
 
 :root {
-  /* Palette Studio Épurée */
-  --bg-deep: #0b0e14;
-  --bg-card: rgba(255, 255, 255, 0.025);
-  --bg-card-hover: rgba(255, 255, 255, 0.045);
-  --bg-card-active: rgba(0, 229, 255, 0.06);
+  /* Palette Studio Épurée & Fond */
+  --bg-deep: #0b0f19;
+  --bg-card: rgba(255, 255, 255, 0.04);
+  --bg-card-hover: rgba(255, 255, 255, 0.07);
+  --bg-card-active: rgba(0, 229, 255, 0.08);
 
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-hover: rgba(255, 255, 255, 0.15);
-  --border-active: #00e5ff;
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(255, 255, 255, 0.2);
+  --border-active: #38bdf8;
 
-  /* Accents Réglés */
-  --cyan-accent: #00e5ff;
-  --cyan-subtle: rgba(0, 229, 255, 0.12);
-  --copper-accent: #e66800;
-  --copper-subtle: rgba(230, 104, 0, 0.12);
+  /* Accents */
+  --cyan-accent: #38bdf8;
+  --cyan-subtle: rgba(56, 189, 248, 0.14);
+  --copper-accent: #f59e0b;
+  --copper-subtle: rgba(245, 158, 11, 0.14);
   --green-accent: #10b981;
+
+  /* Couleurs de Texte Claires (WCAG AAA - Contraste Maximal) */
+  --text-main: #f8fafc;     /* Blanc-gris très lumineux */
+  --text-muted: #cbd5e1;    /* Gris clair très lisible */
+  --text-dim: #94a3b8;      /* Gris moyen pour éléments secondaires */
 
   /* Typographie Modern & Tech */
   --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -61,24 +66,79 @@ html, body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Hiérarchie Typographique Modern Studio */
+/* Hiérarchie Typographique Modern Studio & Contraste Élevé (WCAG AAA) */
+body, html, main, .panel, .app-card, .survey-section, .sub-step, .question-block {
+  color: var(--text-main);
+}
+
 h1, h2, h3, h4, .main-title, .section-title, .recap-modal-title, .success-headline {
   font-family: var(--font-heading);
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.25;
+  color: #ffffff !important;
 }
 
 h1, .main-title {
   font-size: clamp(1.5rem, 4vw, 2.1rem);
+  color: #ffffff !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.title-highlight, .title-accent, .text-cyan {
+  color: #38bdf8 !important;
 }
 
 h2, .section-title {
   font-size: clamp(1.25rem, 3vw, 1.7rem);
+  color: #ffffff !important;
 }
 
 h3, .recap-modal-title {
   font-size: 1.15rem;
+  color: #ffffff !important;
+}
+
+/* Carte Auteur (Jules Frémondière) & Intro */
+.author-badge {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.author-name {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.author-sub {
+  color: #cbd5e1 !important;
+}
+
+.intro-paragraph {
+  color: #e2e8f0 !important;
+  font-size: 0.98rem;
+  line-height: 1.65;
+}
+
+.intro-meta, .meta-item {
+  color: #cbd5e1 !important;
+}
+
+.intro-outro, em, i {
+  color: #94a3b8 !important;
+}
+
+.card-title, .question-label, .row-label {
+  color: #f8fafc !important;
+}
+
+.card-desc, .section-subtitle, .recap-q {
+  color: #cbd5e1 !important;
+}
+
+.ribbon-label {
+  color: #cbd5e1 !important;
+  opacity: 0.75 !important;
 }
 
 /* ==========================================================================
