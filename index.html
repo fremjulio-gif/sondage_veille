@@ -58,9 +58,9 @@
         </div>
       </header>
 
-      <!-- Ruban Sticky de Profilage Dynamique -->
+      <!-- Ruban Sticky de Profilage Dynamique (Minimaliste & Discret) -->
       <div id="user-profiler-ribbon" class="user-profiler-ribbon hidden" aria-live="polite">
-        <div class="ribbon-label">PROFIL DETECTÉ :</div>
+        <div class="ribbon-label">PROFIL DÉTECTÉ :</div>
         <div class="ribbon-tags" id="ribbon-tags">
           <!-- Injecté dynamiquement -->
         </div>
@@ -446,7 +446,7 @@
 
           <!-- SOUS-ÉCRAN 2.3 (Questions 7 à 9) -->
           <div class="sub-step hidden" id="sec2-step-3" data-step="3">
-            <!-- Q2.7 CUSTOM SLIDER (Wording Dynamique) -->
+            <!-- Q2.7 CUSTOM SLIDER -->
             <div class="question-block">
               <label class="question-label" id="label-q2-7">
                 7. Le rôle de l'ingénieur du son glisse-t-il de "l'artisan du signal" vers un simple "superviseur" qui valide le travail des algorithmes ?
@@ -944,22 +944,75 @@
         </div>
       </section>
 
-      <!-- ÉCRAN DE CONFIRMATION / THANK YOU SCREENS -->
+      <!-- ÉCRAN DE CONFIRMATION / GAMIFIED THANK YOU SCREEN -->
       <section id="section-success" class="survey-section hidden" aria-labelledby="title-success">
         <div class="section-content text-center">
-          <div class="success-icon-wrap">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          
+          <!-- Pastille Studio Signal "TRANSMISSION OK" -->
+          <div class="success-signal-badge">
+            <span class="rec-dot success-dot"></span>
+            <span class="signal-text">● SIGNAL ENREGISTRÉ DANS L'ÉTUDE 3iS</span>
           </div>
-          <h2 id="title-success" class="section-title">Merci pour la contribution !</h2>
-          <p class="section-subtitle" id="success-message-text">
-            Vos retours de terrain sont précieux et nourriront directement cette étude de veille 3A CAV-SD à 3iS Paris.
+
+          <h2 id="title-success" class="section-title success-headline">Merci infiniment pour le coup de main !</h2>
+          <p class="section-subtitle success-subheadline">
+            Votre participation apporte une vraie brique de terrain à notre étude de fin d'études.
           </p>
 
+          <!-- Carte Profil Collector "Profil Audio & Vision" -->
+          <div id="profile-collector-card" class="profile-collector-card glass-card">
+            <div class="collector-header">
+              <span class="collector-badge-title">🎙️ BADGE RÉSUMÉ — MÉMOIRE 3iS PARIS</span>
+              <span class="collector-stamp">VALIDÉ</span>
+            </div>
+
+            <div class="collector-grid">
+              <div class="collector-field">
+                <span class="field-label">PROFIL :</span>
+                <span class="field-value" id="card-val-job">Monteur Son & Sound Designer</span>
+              </div>
+              <div class="collector-field">
+                <span class="field-label">TENDANCE IA :</span>
+                <span class="field-value highlight" id="card-val-trend">Un outil d'optimisation sous contrôle</span>
+              </div>
+              <div class="collector-field">
+                <span class="field-label">EMPREINTE :</span>
+                <span class="field-value" id="card-val-print">Attaché à la matière humaine & l'oreille critique</span>
+              </div>
+            </div>
+
+            <!-- Peak Meters / Jauges Audio Animées -->
+            <div class="collector-meters">
+              <div class="meter-row">
+                <span class="meter-label">Sensibilité / Artisanat :</span>
+                <div class="meter-bar-container">
+                  <div class="meter-bar-fill cyan" id="meter-artisanat" style="width: 80%;"></div>
+                </div>
+                <span class="meter-val" id="meter-val-artisanat">80%</span>
+              </div>
+              <div class="meter-row">
+                <span class="meter-label">Ouverture aux algorithmes :</span>
+                <div class="meter-bar-container">
+                  <div class="meter-bar-fill copper" id="meter-ai" style="width: 55%;"></div>
+                </div>
+                <span class="meter-val" id="meter-val-ai">55%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Message central chaleureux & humain -->
+          <div class="glass-card success-message-box">
+            <p id="success-message-text" class="success-body-text">
+              Un immense merci d'avoir pris ce temps ! Votre participation n'est pas juste une ligne de plus dans un tableau : elle apporte une vraie brique du terrain à notre mémoire d'ingénierie du son. Les données sont bien au chaud pour l'analyse !
+            </p>
+          </div>
+
+          <!-- Fallback local si offline -->
           <div id="fallback-container" class="fallback-box hidden">
             <div class="fallback-alert">
               <span class="alert-icon">ℹ️</span>
               <p id="fallback-message-text" class="fallback-msg">
-                L'envoi automatique est en mode local. Vos réponses ont été sauvegardées et téléchargées sur votre appareil !
+                L'envoi automatique est en mode local. Vos réponses ont été sauvegardées et téléchargées !
               </p>
             </div>
             <div class="fallback-actions">
@@ -974,9 +1027,33 @@
             </div>
           </div>
 
+          <!-- Boutons d'action de fin (Partager & Revoir réponses) -->
+          <div class="success-actions-row">
+            <button type="button" class="btn-primary glow-btn" id="btn-share-survey">
+              <span>Partager l'étude à un confrère / collègue 🎙️</span>
+            </button>
+            <button type="button" class="btn-secondary glow-btn" id="btn-review-answers">
+              <span>Revoir mes réponses 👁️</span>
+            </button>
+          </div>
+
+          <!-- Modal Accordéon de Reconsultation des réponses -->
+          <div id="recap-modal" class="recap-modal hidden">
+            <div class="recap-modal-content glass-card">
+              <div class="recap-modal-header">
+                <h3 class="recap-modal-title">📋 Récapitulatif de vos réponses</h3>
+                <button type="button" id="btn-close-recap" class="close-modal-btn">&times;</button>
+              </div>
+              <div class="recap-modal-body" id="recap-modal-list">
+                <!-- Injecté dynamiquement -->
+              </div>
+            </div>
+          </div>
+
           <div class="success-footer">
             <p class="footer-credit">Étude de Veille & Mémoire de fin d'études — 3iS Paris (Cinéma & Audiovisuel)</p>
           </div>
+
         </div>
       </section>
 
@@ -1009,6 +1086,8 @@
     </div>
   </div>
 
+  <!-- Canvas Confetti & Anime.js -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
   <script src="app.js"></script>
 </body>

@@ -18,7 +18,7 @@ const state = {
   answers: {}
 };
 
-// HELPERS DEFENSIFS SEAFETY
+// HELPERS DEFENSIFS SAFETY
 function safeSplit(value, delimiter = ",") {
   if (!value) return [];
   if (Array.isArray(value)) return value;
@@ -143,6 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initOtherInputsFocus();
   initCustomSliders();
   initSuggestionChips();
+  initEndActions();
   
   animateSectionIn(document.getElementById("section-1"));
 });
@@ -244,7 +245,7 @@ function showToast(msg) {
 
   setTimeout(() => {
     toast.remove();
-  }, 1100);
+  }, 1200);
 }
 
 /* ==========================================================================
@@ -931,31 +932,63 @@ function initMicroInteractions() {
 }
 
 /* ==========================================================================
-   6. PANNEAU DE RÉSUMÉ SYNTHÉTIQUE AVANT VALIDATION (CODE DEFENSEUR CRASH-PROOF)
+   6. GENERATEUR LOGIQUE DE SYNTHESE
    ========================================================================== */
+function generatePositioningSummary(answers) {
+  const isPro = state.selectedBranch === "pro" || answers.userBranch === "pro";
+  const rawJob = isPro 
+    ? (answers.pro_job || "Professionnel du son")
+    : (answers.public_job || "Collaborateur / Spectateur");
+  const job = cleanLabel(rawJob);
+
+  const perceptionRaw = (answers.global_ai_perception || "").toLowerCase();
+  let perceptionText = "un outil d'appoint à apprivoiser";
+  
+  if (perceptionRaw.includes("opportunité") || perceptionRaw.includes("passionnante")) {
+    perceptionText = "un levier créatif stimulant et prometteur";
+  } else if (perceptionRaw.includes("menace")) {
+    perceptionText = "un risque pour la sensibilité artistique et l'artisanat";
+  } else if (perceptionRaw.includes("outil")) {
+    perceptionText = "un simple outil technique au service du projet";
+  }
+
+  let nuanceText = "";
+
+  if (isPro) {
+    const overclean = (answers.pro_overclean_risk || "").toLowerCase();
+    const supervisorRating = parseInt(answers.pro_supervisor_role || 3);
+
+    if (overclean.includes("oui") || overclean.includes("vrai problème")) {
+      nuanceText = "tout en restant très vigilant face au risque d'un son lissé ou dénaturé";
+    } else if (supervisorRating >= 4) {
+      nuanceText = "en anticipant une évolution vers un rôle de supervision et de direction artistique";
+    } else {
+      nuanceText = "tout en veillant à préserver l'exigence d'une oreille critique humaine";
+    }
+  } else {
+    const roomToneRating = parseInt(answers.public_room_tone_importance || 3);
+    const dialoguePref = parseInt(answers.public_dialogue_preference || 3);
+
+    if (roomToneRating >= 4) {
+      nuanceText = "avec un attachement fort à l'atmosphère acoustique et au grain naturel des lieux";
+    } else if (dialoguePref <= 2) {
+      nuanceText = "en accordant une priorité absolue à la clarté et l'intelligibilité des voix";
+    } else {
+      nuanceText = "tout en privilégiant l'immersion globale et l'authenticité de l'œuvre";
+    }
+  }
+
+  return `En tant que <strong>${job}</strong>, vous percevez l'IA en post-production principalement comme <strong>${perceptionText}</strong>, ${nuanceText}.`;
+}
+
 function updatePreSubmitSummary() {
   const summaryBox = document.getElementById("pre-submit-summary");
   const summaryText = document.getElementById("summary-text-content");
 
   if (!summaryBox || !summaryText) return;
 
-  const perceptionRaw = cleanLabel(state.answers.global_ai_perception) || "Un simple outil de plus";
-  let stanceText = "";
-
-  if (state.selectedBranch === "pro") {
-    const jobRaw = cleanLabel(state.answers.pro_job) || "Professionnel du son";
-    const earDangerList = safeSplit(state.answers.pro_critical_ear_danger);
-    const earDangerText = earDangerList.length > 0 ? cleanLabel(earDangerList[0]) : "Vigilance sur le savoir-faire";
-
-    stanceText = `En tant que <strong>${jobRaw}</strong>, vous percevez l'IA en post-prod principalement comme <strong>"${perceptionRaw}"</strong>, tout en accordant une importance clé à <strong>"${earDangerText}"</strong>.`;
-  } else {
-    const publicJobRaw = cleanLabel(state.answers.public_job) || "Collaborateur / Spectateur";
-    const soundAtt = state.answers.public_sound_attention || 3;
-
-    stanceText = `En tant que <strong>${publicJobRaw}</strong>, vous percevez l'IA au cinéma comme <strong>"${perceptionRaw}"</strong> (Attention portée à l'écoute des dialogues : <strong>${soundAtt}/5</strong>).`;
-  }
-
-  summaryText.innerHTML = stanceText;
+  const summaryHtml = generatePositioningSummary(state.answers);
+  summaryText.innerHTML = summaryHtml;
   summaryBox.classList.remove("hidden");
 }
 
@@ -970,7 +1003,86 @@ function checkEasterEgg() {
 }
 
 /* ==========================================================================
-   8. SOUMISSION WEBHOOK & TRANSMISSION NARRATIVE
+   8. ACTIONS DE FIN (PARTAGE & MODAL ACCORDÉON RÉCAPITULATIF)
+   ========================================================================== */
+function initEndActions() {
+  const btnShare = document.getElementById("btn-share-survey");
+  const btnReview = document.getElementById("btn-review-answers");
+  const modal = document.getElementById("recap-modal");
+  const btnClose = document.getElementById("btn-close-recap");
+
+  btnShare?.addEventListener("click", () => {
+    playSound("click");
+    const shareUrl = window.location.href.startsWith("http") ? window.location.href : "https://sondage-veille.vercel.app";
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      showToast("Lien copié ! Merci pour le relais 🙏");
+    }).catch(() => {
+      showToast("Lien : sondage-veille.vercel.app");
+    });
+  });
+
+  btnReview?.addEventListener("click", () => {
+    playSound("click");
+    if (!modal) return;
+    populateRecapModal();
+    modal.classList.remove("hidden");
+  });
+
+  btnClose?.addEventListener("click", () => {
+    playSound("click");
+    if (modal) modal.classList.add("hidden");
+  });
+}
+
+function populateRecapModal() {
+  const container = document.getElementById("recap-modal-list");
+  if (!container) return;
+
+  const answers = state.answers;
+  const items = [];
+
+  const labelsMap = {
+    domain_sector: "Activité principale",
+    pro_job: "Rôle Post-Prod",
+    pro_experience: "Expérience",
+    pro_delegated_tasks: "Tâches déléguées à l'IA",
+    pro_time_gain_agree: "Gain de temps vs création",
+    pro_overclean_risk: "Risque son sur-nettoyé",
+    pro_supervisor_role: "Rôle de superviseur",
+    pro_critical_ear_danger: "Danger oreille critique",
+    pro_resistant_fields: "Domaines préservés",
+    public_job: "Métier / Rôle Image",
+    public_sound_attention: "Attention au son",
+    public_bothered_overclean: "Son trop nettoyé remarqué",
+    public_dialogue_preference: "Préférence dialogue",
+    public_delegate_ai_full: "Restauration IA 100% auto",
+    public_editor_ai_use: "Utilisation IA montage image",
+    public_set_behavior_changed: "Rigueur sur les plateaux",
+    public_room_tone_importance: "Valeur Room Tone",
+    public_saved_time_reinvestment: "Réinvestissement du temps",
+    global_ai_perception: "Perception globale IA",
+    global_human_imperfection_agree: "Imperfection humaine vs IA",
+    global_final_comment: "Mot de la fin"
+  };
+
+  Object.keys(answers).forEach(key => {
+    const val = answers[key];
+    if (val && labelsMap[key]) {
+      const displayVal = Array.isArray(val) ? val.join(", ") : val;
+      items.push(`
+        <div class="recap-item">
+          <div class="recap-q">${labelsMap[key]} :</div>
+          <div class="recap-a">${displayVal}</div>
+        </div>
+      `);
+    }
+  });
+
+  container.innerHTML = items.length > 0 ? items.join("") : "<p class='recap-q'>Aucune donnée enregistrée.</p>";
+}
+
+/* ==========================================================================
+   9. SOUMISSION WEBHOOK & ÉCRAN DE CONFIRMATION CÉLÉBRATION (CONFETTI)
    ========================================================================== */
 async function handleFormSubmission() {
   const btnSubmit = document.getElementById("btn-submit");
@@ -1122,24 +1234,72 @@ function fallbackExport(data) {
 }
 
 function showSuccessScreen(isFallback = false, userBranch = "public_other") {
-  const msgEl = document.getElementById("success-message-text");
+  const answers = state.answers;
 
-  const proVariants = [
-    "<strong>🎉 Merci infiniment pour ce retour du terrain !</strong><br><br>Avoir la vision de professionnels en activité est ce qui permet de donner une vraie valeur à ce travail de fin d'études à 3iS. Ces données vont directement nourrir l'analyse de notre mémoire.<br><br><em>Au plaisir d'en échanger autour d'une console ou d'un projet !</em>",
-    "<strong>🎉 Merci beaucoup d'avoir partagé votre expérience !</strong><br><br>Votre retour de terrain est essentiel pour dresser un panorama fidèle de l'intégration de l'IA en post-production. Merci pour le temps accordé à ce travail académique.<br><br><em>Bonnes sessions et à bientôt !</em>",
-    "<strong>🎉 Un grand merci pour votre contribution !</strong><br><br>Votre perspective professionnelle apporte un éclairage indispensable pour comprendre l'évolution de la posture artistique de l'ingénieur du son.<br><br><em>Au plaisir de croiser nos chemins en studio !</em>"
-  ];
-
-  const publicVariants = [
-    "<strong>🎉 Merci beaucoup pour le coup de main !</strong><br><br>Mesurer l'impact de l'IA ne peut pas se faire sans le regard de ceux qui font l'image et de ceux qui vivent les films en salle. Ces retours apportent un éclairage précieux pour compléter notre étude.<br><br><em>Bonne continuation et séances de cinéma !</em>",
-    "<strong>🎉 Merci infiniment pour votre temps !</strong><br><br>Votre vision en tant que collaborateur ou spectateur nous aide à mesurer la perception réelle du son et de ses évolutions technologiques.<br><br><em>Très belles projections à vous !</em>"
-  ];
-
-  if (msgEl) {
-    const variants = userBranch === "pro" ? proVariants : publicVariants;
-    const randomMsg = variants[Math.floor(Math.random() * variants.length)];
-    msgEl.innerHTML = randomMsg;
+  // 1. Déclenchement des confettis thématiques
+  if (typeof confetti === "function") {
+    confetti({
+      particleCount: 85,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ["#00e5ff", "#e66800", "#10b981", "#fbbf24"]
+    });
   }
 
+  // 2. Remplissage de la carte collector "Profil Audio & Vision"
+  const valJob = document.getElementById("card-val-job");
+  const valTrend = document.getElementById("card-val-trend");
+  const valPrint = document.getElementById("card-val-print");
+  const meterArtisanat = document.getElementById("meter-artisanat");
+  const meterValArtisanat = document.getElementById("meter-val-artisanat");
+  const meterAi = document.getElementById("meter-ai");
+  const meterValAi = document.getElementById("meter-val-ai");
+
+  const rawJob = userBranch === "pro" ? answers.pro_job : answers.public_job;
+  if (valJob) valJob.textContent = cleanLabel(rawJob) || "Collaborateur / Spectateur";
+
+  const perceptionRaw = (answers.global_ai_perception || "").toLowerCase();
+  let trendText = "Un outil d'optimisation sous contrôle";
+  if (perceptionRaw.includes("opportunité") || perceptionRaw.includes("passionnante")) {
+    trendText = "Un levier créatif stimulant & prometteur";
+  } else if (perceptionRaw.includes("menace")) {
+    trendText = "Vigilance pour l'artisanat humain";
+  }
+  if (valTrend) valTrend.textContent = trendText;
+
+  let printText = "Attaché à la matière humaine & l'oreille critique";
+  const roomToneRating = parseInt(answers.public_room_tone_importance || 3);
+  if (userBranch !== "pro" && roomToneRating >= 4) {
+    printText = "Passionné par l'acoustique & le grain des lieux";
+  }
+  if (valPrint) valPrint.textContent = printText;
+
+  // Calcul des Jauges Audio Peak Meters
+  const humanScore = parseInt(answers.global_human_imperfection_agree || 3);
+  const artisanatPct = Math.min(95, Math.max(45, humanScore * 18));
+  
+  const delTasks = safeSplit(answers.pro_delegated_tasks);
+  const aiScore = delTasks.length * 12 + (perceptionRaw.includes("opportunité") ? 25 : 15);
+  const aiPct = Math.min(90, Math.max(30, aiScore || 50));
+
+  if (meterArtisanat) meterArtisanat.style.width = `${artisanatPct}%`;
+  if (meterValArtisanat) meterValArtisanat.textContent = `${artisanatPct}%`;
+  if (meterAi) meterAi.style.width = `${aiPct}%`;
+  if (meterValAi) meterValAi.textContent = `${aiPct}%`;
+
+  // 3. Animation séquencée Staggered d'arrivée
   navigateToSection("section-success");
+
+  const successEl = document.getElementById("section-success");
+  if (successEl && typeof anime !== "undefined") {
+    const blocks = successEl.querySelectorAll(".success-signal-badge, .success-headline, .profile-collector-card, .success-message-box, .success-actions-row");
+    anime({
+      targets: blocks,
+      opacity: [0, 1],
+      translateY: [16, 0],
+      delay: anime.stagger(140),
+      duration: 400,
+      easing: "easeOutCubic"
+    });
+  }
 }

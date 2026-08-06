@@ -19,6 +19,7 @@
   --cyan-subtle: rgba(0, 229, 255, 0.12);
   --copper-accent: #e66800;
   --copper-subtle: rgba(230, 104, 0, 0.12);
+  --green-accent: #10b981;
 
   /* Typographie & Textes */
   --text-main: #f1f5f9;
@@ -607,7 +608,6 @@ html, body {
   gap: 10px;
 }
 
-/* Choice Cards - Alignement Flexbox Strict */
 .option-card {
   position: relative;
   display: flex !important;
@@ -797,7 +797,6 @@ html, body {
   cursor: pointer;
 }
 
-/* Stacked cards pour Mobile (< 768px) */
 .matrix-stacked-cards {
   display: flex;
   flex-direction: column;
@@ -1168,6 +1167,284 @@ html, body {
 }
 
 /* ==========================================================================
+   GAMIFIED THANK YOU SCREEN (CONFIRMATION & CARTE COLLECTOR)
+   ========================================================================== */
+.success-signal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--green-accent);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  animation: pulseGreenBadge 2s infinite alternate ease-in-out;
+}
+
+.rec-dot.success-dot {
+  background-color: var(--green-accent);
+  box-shadow: 0 0 10px var(--green-accent);
+}
+
+@keyframes pulseGreenBadge {
+  0% { box-shadow: 0 0 4px rgba(16, 185, 129, 0.2); }
+  100% { box-shadow: 0 0 16px rgba(16, 185, 129, 0.5); }
+}
+
+.success-headline {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.success-subheadline {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+
+/* Carte Collector "Profil Audio & Vision" */
+.profile-collector-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(0, 229, 255, 0.06) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+  text-align: left;
+  box-shadow: 0 12px 40px rgba(0, 229, 255, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.collector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.collector-badge-title {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--cyan-accent);
+  letter-spacing: 0.05em;
+}
+
+.collector-stamp {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: var(--green-accent);
+  color: #0b0e14;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.08em;
+}
+
+.collector-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.collector-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.field-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.field-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.field-value.highlight {
+  color: var(--cyan-accent);
+}
+
+/* Peak Meters Animés */
+.collector-meters {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meter-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.8rem;
+}
+
+.meter-label {
+  width: 170px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.meter-bar-container {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.meter-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease-out;
+}
+
+.meter-bar-fill.cyan {
+  background: linear-gradient(90deg, #3b82f6, #00e5ff);
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.5);
+}
+
+.meter-bar-fill.copper {
+  background: linear-gradient(90deg, #e66800, #f59e0b);
+  box-shadow: 0 0 8px rgba(230, 104, 0, 0.5);
+}
+
+.meter-val {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-main);
+  width: 40px;
+  text-align: right;
+}
+
+.success-message-box {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.success-body-text {
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.success-actions-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+/* Modal Accordéon Récapitulatif */
+.recap-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 14, 20, 0.88);
+  backdrop-filter: blur(16px);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.recap-modal.hidden {
+  display: none !important;
+}
+
+.recap-modal-content {
+  width: 100%;
+  max-width: 650px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  border-color: rgba(0, 229, 255, 0.3);
+}
+
+.recap-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.recap-modal-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--cyan-accent);
+}
+
+.close-modal-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.8rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.close-modal-btn:hover {
+  color: var(--text-main);
+}
+
+.recap-modal-body {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 6px;
+}
+
+.recap-item {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 0.88rem;
+}
+
+.recap-q {
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.recap-a {
+  color: var(--cyan-accent);
+  font-weight: 600;
+}
+
+/* ==========================================================================
    TOASTS & FLASH MESSAGES ÉPHÉMÈRES
    ========================================================================== */
 .toast-container {
@@ -1252,18 +1529,6 @@ html, body {
    ========================================================================== */
 .text-center {
   text-align: center;
-}
-
-.success-icon-wrap {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: var(--cyan-subtle);
-  border: 1px solid var(--cyan-accent);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto 20px;
 }
 
 .fallback-box {
@@ -1448,5 +1713,27 @@ html, body {
 
   .slider-feedback-label {
     font-size: 0.8rem;
+  }
+
+  .meter-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .meter-label {
+    width: 100%;
+  }
+
+  .meter-bar-container {
+    width: 100%;
+  }
+
+  .success-actions-row {
+    flex-direction: column;
+  }
+
+  .success-actions-row button {
+    width: 100%;
   }
 }
