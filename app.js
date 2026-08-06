@@ -4,7 +4,7 @@
    ========================================================================== */
 
 // Webhook URL Google Apps Script pour l'enregistrement automatique dans Google Sheets
-const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxppu2PcP2t1yHGRWT47etcZRnp2eHzzBgcI4mot1R_DvFh_gLdvh2MimlBeni_LzTJog/exec"; 
+const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwJBZhYj8OQwVdN68dmlVqHEAp9GKWY0Btt0--rptCULxGGwEOOmScNKj7QSlMGGigvJA/exec"; 
 
 // État global de l'application
 const state = {
