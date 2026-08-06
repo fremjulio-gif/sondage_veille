@@ -18,6 +18,20 @@ const state = {
   answers: {}
 };
 
+// HELPERS DEFENSIFS SEAFETY
+function safeSplit(value, delimiter = ",") {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  if (typeof value === "string") return value.split(delimiter).map(s => s.trim()).filter(Boolean);
+  return [String(value)];
+}
+
+function cleanLabel(val) {
+  if (!val) return "";
+  const str = typeof val === "string" ? val : String(val);
+  return str.split("(")[0].trim();
+}
+
 // Synthèse Sonore Web Audio API (Effets Studio)
 let audioCtx = null;
 
@@ -45,7 +59,6 @@ function playSound(type) {
     const now = ctx.currentTime;
 
     if (type === "click") {
-      // Clic doux mécanique studio
       osc.type = "sine";
       osc.frequency.setValueAtTime(800, now);
       osc.frequency.exponentialRampToValueAtTime(200, now + 0.015);
@@ -54,7 +67,6 @@ function playSound(type) {
       osc.start(now);
       osc.stop(now + 0.015);
     } else if (type === "tick") {
-      // Tic de potentiomètre / fader
       osc.type = "triangle";
       osc.frequency.setValueAtTime(1200, now);
       gain.gain.setValueAtTime(0.08, now);
@@ -62,7 +74,6 @@ function playSound(type) {
       osc.start(now);
       osc.stop(now + 0.01);
     } else if (type === "whoosh") {
-      // Glissement de tranche
       osc.type = "sine";
       osc.frequency.setValueAtTime(300, now);
       osc.frequency.exponentialRampToValueAtTime(600, now + 0.08);
@@ -72,11 +83,11 @@ function playSound(type) {
       osc.stop(now + 0.08);
     }
   } catch (e) {
-    // Ignorer les erreurs d'audio browser
+    // Ignorer les erreurs audio browser
   }
 }
 
-// Libellés dynamiques qualitatifs pour les échelles 1 à 5 (Charte 3iS)
+// Libellés dynamiques qualitatifs pour les échelles 1 à 5
 const SLIDER_FEEDBACK_MAPS = {
   pro_time_gain_agree: {
     1: "1/5 : Pas du tout d'accord",
@@ -158,7 +169,7 @@ function initSoundToggle() {
 }
 
 /* ==========================================================================
-   CANVAS WAVEFORM ANIMÉE & RÉACTICE
+   CANVAS WAVEFORM ANIMÉE & RÉACTIVE
    ========================================================================== */
 let wavePulse = 1;
 function triggerWaveformPulse() {
@@ -255,17 +266,18 @@ function updateProfilerRibbon() {
   }
 
   if (state.answers.pro_job) {
-    tags.push(`🎧 ${state.answers.pro_job.split("(")[0].trim()}`);
+    tags.push(`🎧 ${cleanLabel(state.answers.pro_job)}`);
   } else if (state.answers.public_job) {
-    tags.push(`📽️ ${state.answers.public_job.split("(")[0].trim()}`);
+    tags.push(`📽️ ${cleanLabel(state.answers.public_job)}`);
   }
 
   if (state.answers.pro_experience) {
-    tags.push(`⏱ ${state.answers.pro_experience.split("(")[0].trim()}`);
+    tags.push(`⏱ ${cleanLabel(state.answers.pro_experience)}`);
   }
 
-  if (Array.isArray(state.answers.pro_delegated_tasks) && state.answers.pro_delegated_tasks.length > 0) {
-    tags.push(`⚙️ ${state.answers.pro_delegated_tasks.length} outils IA`);
+  const delTasks = safeSplit(state.answers.pro_delegated_tasks);
+  if (delTasks.length > 0) {
+    tags.push(`⚙️ ${delTasks.length} outils IA`);
   }
 
   if (tags.length > 0) {
@@ -633,7 +645,6 @@ function initCustomSliders() {
         anime.remove(thumb);
         anime.remove(fill);
 
-        // Effet ressort Spring Physics pour un calage physique naturel
         anime({
           targets: thumb,
           left: `${targetPct}%`,
@@ -720,7 +731,6 @@ function initCustomSliders() {
     trackWrapper.addEventListener("mousedown", onPointerDown);
     trackWrapper.addEventListener("touchstart", onPointerDown, { passive: true });
 
-    // Initialisation au centre (Step 3 = 50%)
     setStep(3, false);
   });
 }
@@ -751,10 +761,10 @@ function initSuggestionChips() {
 
 function updateDynamicWording() {
   if (state.answers.pro_job) {
-    const jobRaw = state.answers.pro_job.split("(")[0].trim().toLowerCase();
+    const jobLabel = cleanLabel(state.answers.pro_job).toLowerCase();
     const labelQ27 = document.getElementById("label-q2-7");
-    if (labelQ27) {
-      labelQ27.innerHTML = `7. En tant que <strong>${jobRaw}</strong>, le rôle glisse-t-il de "l'artisan du signal" vers un "superviseur" qui valide le travail des algorithmes ?`;
+    if (labelQ27 && jobLabel) {
+      labelQ27.innerHTML = `7. En tant que <strong>${jobLabel}</strong>, le rôle glisse-t-il de "l'artisan du signal" vers un "superviseur" qui valide le travail des algorithmes ?`;
     }
   }
 }
@@ -775,7 +785,6 @@ function initFormListeners() {
     });
   });
 
-  // Écoute des checkboxes pour compteurs dynamiques
   document.querySelectorAll("input[type='checkbox']").forEach(cb => {
     cb.addEventListener("change", () => {
       playSound("click");
@@ -793,7 +802,6 @@ function initFormListeners() {
     });
   });
 
-  // Écoute des radios pour checkmarks et pulse container
   document.querySelectorAll("input[type='radio']").forEach(radio => {
     radio.addEventListener("change", () => {
       playSound("click");
@@ -803,7 +811,6 @@ function initFormListeners() {
       const checkmark = qBlock?.querySelector(".q-checkmark");
       if (checkmark) checkmark.classList.add("visible");
 
-      // Pulse de conteneur
       const panel = document.getElementById("main-panel");
       if (panel) {
         panel.classList.add("panel-pulse");
@@ -904,7 +911,6 @@ function initMicroInteractions() {
     card.addEventListener("click", (e) => {
       if (e.target.classList.contains("inline-other-input")) return;
       
-      // Micro-bump réactif 1.0 -> 1.04 -> 1.0 (180ms)
       anime({
         targets: card,
         scale: [1, 1.04, 1],
@@ -925,7 +931,7 @@ function initMicroInteractions() {
 }
 
 /* ==========================================================================
-   6. PANNEAU DE RÉSUMÉ SYNTHÉTIQUE AVANT VALIDATION
+   6. PANNEAU DE RÉSUMÉ SYNTHÉTIQUE AVANT VALIDATION (CODE DEFENSEUR CRASH-PROOF)
    ========================================================================== */
 function updatePreSubmitSummary() {
   const summaryBox = document.getElementById("pre-submit-summary");
@@ -933,10 +939,23 @@ function updatePreSubmitSummary() {
 
   if (!summaryBox || !summaryText) return;
 
-  const perception = state.answers.global_ai_perception || "Un simple outil de plus";
-  const earDanger = state.answers.pro_critical_ear_danger || state.answers.public_sound_attention || "Vigilance sur la sensibilité humaine";
+  const perceptionRaw = cleanLabel(state.answers.global_ai_perception) || "Un simple outil de plus";
+  let stanceText = "";
 
-  summaryText.innerHTML = `En résumé : Vous percevez l'IA en post-prod principalement comme <strong>"${perception.split("(")[0].trim()}"</strong>, tout en accordant une importance clé à <strong>"${earDanger.split("(")[0].trim()}"</strong>.`;
+  if (state.selectedBranch === "pro") {
+    const jobRaw = cleanLabel(state.answers.pro_job) || "Professionnel du son";
+    const earDangerList = safeSplit(state.answers.pro_critical_ear_danger);
+    const earDangerText = earDangerList.length > 0 ? cleanLabel(earDangerList[0]) : "Vigilance sur le savoir-faire";
+
+    stanceText = `En tant que <strong>${jobRaw}</strong>, vous percevez l'IA en post-prod principalement comme <strong>"${perceptionRaw}"</strong>, tout en accordant une importance clé à <strong>"${earDangerText}"</strong>.`;
+  } else {
+    const publicJobRaw = cleanLabel(state.answers.public_job) || "Collaborateur / Spectateur";
+    const soundAtt = state.answers.public_sound_attention || 3;
+
+    stanceText = `En tant que <strong>${publicJobRaw}</strong>, vous percevez l'IA au cinéma comme <strong>"${perceptionRaw}"</strong> (Attention portée à l'écoute des dialogues : <strong>${soundAtt}/5</strong>).`;
+  }
+
+  summaryText.innerHTML = stanceText;
   summaryBox.classList.remove("hidden");
 }
 
@@ -1016,7 +1035,6 @@ async function handleFormSubmission() {
   if (btnText) btnText.textContent = "Transmission en cours...";
   if (loadingOverlay) loadingOverlay.classList.remove("hidden");
 
-  // Animation narrative de transmission
   const mainPanel = document.getElementById("main-panel");
   if (mainPanel && typeof anime !== "undefined") {
     anime({
@@ -1106,7 +1124,6 @@ function fallbackExport(data) {
 function showSuccessScreen(isFallback = false, userBranch = "public_other") {
   const msgEl = document.getElementById("success-message-text");
 
-  // Variantes aléatoires de messages de remerciements
   const proVariants = [
     "<strong>🎉 Merci infiniment pour ce retour du terrain !</strong><br><br>Avoir la vision de professionnels en activité est ce qui permet de donner une vraie valeur à ce travail de fin d'études à 3iS. Ces données vont directement nourrir l'analyse de notre mémoire.<br><br><em>Au plaisir d'en échanger autour d'une console ou d'un projet !</em>",
     "<strong>🎉 Merci beaucoup d'avoir partagé votre expérience !</strong><br><br>Votre retour de terrain est essentiel pour dresser un panorama fidèle de l'intégration de l'IA en post-production. Merci pour le temps accordé à ce travail académique.<br><br><em>Bonnes sessions et à bientôt !</em>",
