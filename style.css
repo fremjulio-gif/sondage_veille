@@ -1953,27 +1953,219 @@ h3, .recap-modal-title {
   }
 }
 
-@media (max-width: 380px) {
+/* ==========================================================================
+   OPTIMISATION RESPONSIVE MOBILE ULTRA-COMPACTE (BREAKPOINT <= 480px)
+   Garantit que la Question 1 et ses options sont visibles sans scroll sur iPhone
+   ========================================================================== */
+@media (max-width: 480px) {
+  /* 5. Réduction taille de police barre de progression (-15 à 20%) */
+  .progress-info {
+    top: 5px !important;
+    left: 10px !important;
+    right: 10px !important;
+  }
+
+  .progress-step-text,
+  .progress-percentage {
+    font-size: 0.62rem !important; /* Réduction ~17% (était 0.75rem) */
+  }
+
+  /* 4. Réduction des marges et paddings verticaux */
   .app-viewport {
-    padding: 38px 6px 16px;
+    padding: 26px 8px max(10px, env(safe-area-inset-bottom)) !important;
+    min-height: 100dvh !important;
+    display: flex !important;
+    align-items: flex-start !important; /* Rapproche la carte du haut d'écran */
   }
+
+  .app-card {
+    border-radius: var(--radius-sm) !important;
+    margin: 0 auto !important;
+  }
+
+  /* 3 & 5. Simplification en-tête studio : masquer bars VU, masquer label 'Audio Studio', réduire texte auteur */
+  .studio-header {
+    padding: 6px 10px !important;
+    gap: 6px !important;
+  }
+
+  .studio-badge .badge-text {
+    font-size: 0.58rem !important; /* Réduction ~17% (était 0.7rem) */
+    letter-spacing: 0.02em !important;
+  }
+
+  .rec-dot {
+    width: 5px !important;
+    height: 5px !important;
+  }
+
+  .studio-meter-decor {
+    display: none !important; /* 3. Retrait des barres décoratives colorées */
+  }
+
+  .sound-label {
+    display: none !important; /* 3. Retrait du texte 'Audio Studio' */
+  }
+
+  .sound-toggle-btn {
+    padding: 3px 6px !important;
+    min-height: 26px !important;
+    border-radius: 8px !important;
+    gap: 0 !important;
+  }
+
+  .sound-icon {
+    font-size: 0.75rem !important;
+  }
+
+  /* 4. Section et Hero compactés */
   .survey-section {
-    padding: 16px 10px;
+    padding: 10px 10px 12px !important;
   }
+
+  .hero-section {
+    gap: 2px !important;
+    padding: 0 !important;
+  }
+
+  /* 1. Titre h1 compacté */
   .main-title {
-    font-size: 1.25rem;
+    font-size: 1.08rem !important;
+    line-height: 1.24 !important;
+    margin-bottom: 2px !important;
   }
-  .section-title {
-    font-size: 1.1rem;
+
+  /* 5. Auteur / Mémoire réduit de ~17% */
+  .author-inline {
+    font-size: 0.68rem !important; /* Réduction ~17% (était 0.82rem) */
+    margin: 1px 0 3px !important;
+    gap: 4px !important;
+    line-height: 1.25 !important;
   }
+
+  /* 1. Suppression du paragraphe redondant sur mobile */
+  .hero-description {
+    display: none !important;
+  }
+
+  /* 2. Les 3 badges sur une seule ligne horizontale compacte */
+  .hero-badges-row {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 5px !important;
+    margin: 2px 0 2px !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .badge-pill {
+    flex: 0 1 auto !important;
+    font-size: 0.65rem !important;
+    padding: 2px 6px !important;
+    white-space: nowrap !important;
+    line-height: 1.25 !important;
+  }
+
+  /* 4. Ligne de séparation affinée */
+  .hero-divider {
+    margin: 6px 0 8px !important;
+  }
+
+  /* Question 1 compacte et optimisée */
+  .question-block#block-q1 {
+    margin-bottom: 8px !important;
+  }
+
+  .question-label#label-q1 {
+    font-size: 0.86rem !important;
+    line-height: 1.25 !important;
+    margin-bottom: 6px !important;
+  }
+
+  .options-grid {
+    gap: 5px !important;
+  }
+
   .option-card {
-    padding: 10px 12px;
+    padding: 7px 9px !important;
+    min-height: auto !important;
+    border-radius: var(--radius-sm) !important;
   }
-  .card-title {
-    font-size: 0.85rem;
+
+  .option-card .card-content {
+    gap: 1px !important;
   }
-  .btn-primary, .btn-secondary, .btn-submit {
-    padding: 10px 14px;
-    font-size: 0.88rem;
+
+  .option-card .card-title {
+    font-size: 0.80rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .option-card .card-desc {
+    font-size: 0.68rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .card-indicator {
+    width: 14px !important;
+    height: 14px !important;
+    margin-top: 1px !important;
+  }
+
+  .card-indicator::after {
+    width: 6px !important;
+    height: 6px !important;
+  }
+
+  /* Bouton d'action principal */
+  .nav-controls {
+    margin-top: 8px !important;
+    gap: 6px !important;
+  }
+
+  .nav-controls button {
+    min-height: 38px !important;
+    padding: 7px 12px !important;
+    font-size: 0.84rem !important;
+  }
+
+  /* Optimisation des sous-étapes suivantes sur mobile */
+  .step-header {
+    margin-bottom: 6px !important;
+  }
+
+  .section-title {
+    font-size: 1.05rem !important;
+    line-height: 1.24 !important;
+    margin-bottom: 3px !important;
+  }
+
+  .section-subtitle {
+    font-size: 0.78rem !important;
+    line-height: 1.35 !important;
+    margin-bottom: 10px !important;
+  }
+
+  .section-subtitle.intro-context {
+    padding: 8px 10px !important;
+    font-size: 0.78rem !important;
+    margin-bottom: 10px !important;
+  }
+
+  .section-header-wrap {
+    margin-bottom: 6px !important;
+  }
+
+  .section-badge {
+    font-size: 0.60rem !important;
+    padding: 2px 5px !important;
+  }
+
+  .substep-badge {
+    font-size: 0.60rem !important;
+    padding: 2px 5px !important;
   }
 }
