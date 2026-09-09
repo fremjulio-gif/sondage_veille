@@ -64,233 +64,82 @@ function playSound(type, param) {
     const now = ctx.currentTime;
 
     if (type === "start" || type === "intro_start") {
-      // 1. SON DE DÉBUT : "Studio Tape Start / Console Wake" (Feeljuice feutré & organique)
-      // Double oscillateur harmonique accordé avec balayage doux & filtre passe-bas analogique
-      const osc1 = ctx.createOscillator();
-      const osc2 = ctx.createOscillator();
+      // 1. SON DE DÉBUT : Apple Liquid Glass Droplet / Crystalline Bloom
+      // Onde sinusoïdale pure cristalline (Mi6 -> Do6) avec micro-harmonique verre liquide
+      const osc = ctx.createOscillator();
+      const oscOvertone = ctx.createOscillator();
       const gain = ctx.createGain();
-      const filter = ctx.createBiquadFilter();
+      const gainOvertone = ctx.createGain();
 
-      filter.type = "lowpass";
-      filter.frequency.setValueAtTime(700, now);
-      filter.frequency.exponentialRampToValueAtTime(1800, now + 0.16);
-
-      osc1.type = "sine";
-      osc1.frequency.setValueAtTime(220, now);
-      osc1.frequency.exponentialRampToValueAtTime(440, now + 0.14);
-
-      osc2.type = "sine";
-      osc2.frequency.setValueAtTime(330, now);
-      osc2.frequency.exponentialRampToValueAtTime(660, now + 0.14);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(1320, now);
+      osc.frequency.exponentialRampToValueAtTime(1046.5, now + 0.08);
 
       gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.linearRampToValueAtTime(0.09, now + 0.025);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+      gain.gain.linearRampToValueAtTime(0.026, now + 0.005);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.10);
 
-      osc1.connect(filter);
-      osc2.connect(filter);
-      filter.connect(gain);
+      // Micro-harmonique de réfraction verre translucide (Do7)
+      oscOvertone.type = "sine";
+      oscOvertone.frequency.setValueAtTime(2093, now);
+      gainOvertone.gain.setValueAtTime(0.0001, now);
+      gainOvertone.gain.linearRampToValueAtTime(0.006, now + 0.004);
+      gainOvertone.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
+
+      osc.connect(gain);
+      oscOvertone.connect(gainOvertone);
       gain.connect(ctx.destination);
+      gainOvertone.connect(ctx.destination);
 
-      osc1.start(now);
-      osc2.start(now);
-      osc1.stop(now + 0.18);
-      osc2.stop(now + 0.18);
+      osc.start(now);
+      oscOvertone.start(now);
+      osc.stop(now + 0.10);
+      oscOvertone.stop(now + 0.045);
 
     } else if (type === "finish" || type === "success_complete") {
-      // 2. SON DE FIN : "Master Export / Studio Chime" (Triade majeure feutrée & scintillante)
-      // 3 harmoniques étagées (La5 - Do#6 - Mi6) avec décroissance exponentielle douce
-      const chord = [880, 1108.73, 1318.51];
-      chord.forEach((freq, idx) => {
+      // 2. SON DE FIN : Apple Glassmorphism Shimmer Triad / Crystal Completion
+      // Triade majeure cristalline et translucide (Do6 - Mi6 - Sol6) étagée sur 220ms, ultra-feutrée
+      const glassNotes = [
+        { freq: 1046.5, delay: 0.00, dur: 0.18, vol: 0.020 },
+        { freq: 1318.5, delay: 0.04, dur: 0.20, vol: 0.018 },
+        { freq: 1567.98, delay: 0.08, dur: 0.24, vol: 0.016 }
+      ];
+
+      glassNotes.forEach(note => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        const startOffset = idx * 0.06;
-        const noteStart = now + startOffset;
-        const noteDur = 0.32;
+        const tStart = now + note.delay;
 
         osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, noteStart);
-        osc.frequency.exponentialRampToValueAtTime(freq * 1.01, noteStart + noteDur);
+        osc.frequency.setValueAtTime(note.freq, tStart);
+        osc.frequency.exponentialRampToValueAtTime(note.freq * 1.005, tStart + note.dur);
 
-        gain.gain.setValueAtTime(0.0001, noteStart);
-        gain.gain.linearRampToValueAtTime(0.065 / (idx * 0.25 + 1), noteStart + 0.018);
-        gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + noteDur);
+        gain.gain.setValueAtTime(0.0001, tStart);
+        gain.gain.linearRampToValueAtTime(note.vol, tStart + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.0001, tStart + note.dur);
 
         osc.connect(gain);
         gain.connect(ctx.destination);
 
-        osc.start(noteStart);
-        osc.stop(noteStart + noteDur);
+        osc.start(tStart);
+        osc.stop(tStart + note.dur);
       });
 
     } else if (type === "slider_step") {
-      // 3. PITCHING SLIDERS 1 À 5 : Échelle pentatonique harmonique (A4, C#5, E5, G#5, C#6)
+      // 3. PITCHING SLIDERS 1 À 5 : Cristaux marimba verre ultra-doux (Do5 à Ré6)
       const step = Math.min(5, Math.max(1, parseInt(param) || 3));
-      const scale = { 1: 440, 2: 554.37, 3: 659.25, 4: 830.61, 5: 1108.73 };
-      const baseFreq = scale[step] || 659.25;
+      const scale = { 1: 523.25, 2: 659.25, 3: 783.99, 4: 987.77, 5: 1174.66 };
+      const baseFreq = scale[step] || 783.99;
 
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
       osc.type = "sine";
       osc.frequency.setValueAtTime(baseFreq, now);
-      osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.97, now + 0.024);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.98, now + 0.022);
 
-      gain.gain.setValueAtTime(0.085, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.024);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.024);
-
-    } else if (type === "slider_release") {
-      // Confirmation tactile au relâchement du slider
-      const step = Math.min(5, Math.max(1, parseInt(param) || 3));
-      const scale = { 1: 440, 2: 554.37, 3: 659.25, 4: 830.61, 5: 1108.73 };
-      const baseFreq = scale[step] || 659.25;
-
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(baseFreq * 1.15, now);
-      osc.frequency.exponentialRampToValueAtTime(baseFreq, now + 0.018);
-
-      gain.gain.setValueAtTime(0.055, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.018);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.018);
-
-    } else if (type === "radio") {
-      // 4. BOUTONS RADIOS / CARTES D'OPTIONS : Pop tactile avec micro-pitch selon l'indice
-      const idx = typeof param === "number" ? Math.max(0, param) : 0;
-      const pitchRatio = 1.0 + Math.min(idx * 0.07, 0.35); // Variations subtiles sans machine-gun effect
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(740 * pitchRatio, now);
-      osc.frequency.exponentialRampToValueAtTime(250 * pitchRatio, now + 0.018);
-
-      gain.gain.setValueAtTime(0.10, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.018);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.018);
-
-    } else if (type === "checkbox_on") {
-      // 5. CASES À COCHER (ACTIVATION) : Micro-blip montant satisfaisant pitched selon le compte
-      const count = typeof param === "number" ? Math.max(1, param) : 1;
-      const pitchOffset = Math.min(count * 50, 250);
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(540 + pitchOffset, now);
-      osc.frequency.exponentialRampToValueAtTime(940 + pitchOffset, now + 0.018);
-
-      gain.gain.setValueAtTime(0.09, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.018);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.018);
-
-    } else if (type === "checkbox_off") {
-      // 5b. CASES À COCHER (DÉSACTIVATION) : Micro-blip descendant doux
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(840, now);
-      osc.frequency.exponentialRampToValueAtTime(460, now + 0.015);
-
-      gain.gain.setValueAtTime(0.065, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.015);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.015);
-
-    } else if (type === "chip") {
-      // 6. PASTILLES & CHIPS DE SUGGESTION : Pop verre/bulle feutré
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(1180, now);
-      osc.frequency.exponentialRampToValueAtTime(660, now + 0.016);
-
-      gain.gain.setValueAtTime(0.075, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.016);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.016);
-
-    } else if (type === "matrix") {
-      // 7. GRILLE MATRICIELLE RADIO : Tick discret échelonné par niveau
-      const level = Math.min(5, Math.max(1, parseInt(param) || 3));
-      const baseFreq = 620 + (level * 70); // 690Hz à 970Hz
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(baseFreq, now);
-      osc.frequency.exponentialRampToValueAtTime(280, now + 0.015);
-
-      gain.gain.setValueAtTime(0.07, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.015);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.015);
-
-    } else if (type === "nav_next") {
-      // 8. BOUTON SUIVANT : Impulsion fréquentielle montante vers l'avant
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(460, now);
-      osc.frequency.exponentialRampToValueAtTime(780, now + 0.026);
-
-      gain.gain.setValueAtTime(0.09, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.026);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.026);
-
-    } else if (type === "nav_back") {
-      // 9. BOUTON RETOUR : Blip descendant doux non-intrusif
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(640, now);
-      osc.frequency.exponentialRampToValueAtTime(360, now + 0.022);
-
-      gain.gain.setValueAtTime(0.065, now);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.022, now + 0.003);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.022);
 
       osc.connect(gain);
@@ -299,30 +148,171 @@ function playSound(type, param) {
       osc.start(now);
       osc.stop(now + 0.022);
 
+    } else if (type === "slider_release") {
+      // Micro-snap tactile feutré au relâchement
+      const step = Math.min(5, Math.max(1, parseInt(param) || 3));
+      const scale = { 1: 523.25, 2: 659.25, 3: 783.99, 4: 987.77, 5: 1174.66 };
+      const baseFreq = scale[step] || 783.99;
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(baseFreq * 1.1, now);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq, now + 0.015);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.015, now + 0.002);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.015);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.015);
+
+    } else if (type === "radio") {
+      // 4. BOUTONS RADIOS : Tap verre liquide très subtil avec micro-pitch selon l'indice
+      const idx = typeof param === "number" ? Math.max(0, param) : 0;
+      const pitchRatio = 1.0 + Math.min(idx * 0.06, 0.30);
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(920 * pitchRatio, now);
+      osc.frequency.exponentialRampToValueAtTime(420 * pitchRatio, now + 0.016);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.024, now + 0.003);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.016);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.016);
+
+    } else if (type === "checkbox_on") {
+      // 5. CASES À COCHER (ACTIVATION) : Ping cristal translucide montant
+      const count = typeof param === "number" ? Math.max(1, param) : 1;
+      const pitchOffset = Math.min(count * 40, 200);
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(740 + pitchOffset, now);
+      osc.frequency.exponentialRampToValueAtTime(1180 + pitchOffset, now + 0.016);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.022, now + 0.003);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.016);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.016);
+
+    } else if (type === "checkbox_off") {
+      // 5b. CASES À COCHER (DÉSACTIVATION) : Micro-blip verre doux descendant
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(960, now);
+      osc.frequency.exponentialRampToValueAtTime(620, now + 0.013);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.016, now + 0.002);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.013);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.013);
+
+    } else if (type === "chip") {
+      // 6. PASTILLES & CHIPS : Pop verre bulle léger
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(1260, now);
+      osc.frequency.exponentialRampToValueAtTime(760, now + 0.015);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.018, now + 0.002);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.015);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.015);
+
+    } else if (type === "matrix") {
+      // 7. GRILLE MATRICIELLE : Tick discret échelonné
+      const level = Math.min(5, Math.max(1, parseInt(param) || 3));
+      const baseFreq = 720 + (level * 60);
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(baseFreq, now);
+      osc.frequency.exponentialRampToValueAtTime(380, now + 0.013);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.017, now + 0.002);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.013);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.013);
+
+    } else if (type === "nav_next") {
+      // 8. BOUTON SUIVANT : Balayage ascendant feutré Apple glass
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(560, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.022);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.022, now + 0.004);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.022);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.022);
+
+    } else if (type === "nav_back") {
+      // 9. BOUTON RETOUR : Blip descendant doux
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(740, now);
+      osc.frequency.exponentialRampToValueAtTime(460, now + 0.018);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.016, now + 0.003);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.018);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.018);
+
     } else if (type === "toggle_on") {
-      // 10. ACTIVATION SONORE : Deux notes montantes lumineuses (Do5 -> Sol5)
-      [523.25, 783.99].forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const t = now + i * 0.055;
-
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, t);
-
-        gain.gain.setValueAtTime(0.0001, t);
-        gain.gain.linearRampToValueAtTime(0.08, t + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start(t);
-        osc.stop(t + 0.09);
-      });
-
-    } else if (type === "toggle_off") {
-      // 10b. DÉSACTIVATION SONORE : Deux notes descendantes feutrées (Sol5 -> Do5)
-      [783.99, 523.25].forEach((freq, i) => {
+      // 10. ACTIVATION SONORE : Deux micro-notes verre cristallines
+      [659.25, 987.77].forEach((freq, i) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         const t = now + i * 0.045;
@@ -331,34 +321,56 @@ function playSound(type, param) {
         osc.frequency.setValueAtTime(freq, t);
 
         gain.gain.setValueAtTime(0.0001, t);
-        gain.gain.linearRampToValueAtTime(0.055, t + 0.008);
-        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+        gain.gain.linearRampToValueAtTime(0.020, t + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
 
         osc.connect(gain);
         gain.connect(ctx.destination);
 
         osc.start(t);
-        osc.stop(t + 0.07);
+        osc.stop(t + 0.08);
+      });
+
+    } else if (type === "toggle_off") {
+      // 10b. DÉSACTIVATION SONORE : Deux micro-notes verre descendantes
+      [987.77, 659.25].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const t = now + i * 0.040;
+
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, t);
+
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.linearRampToValueAtTime(0.015, t + 0.006);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.065);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(t);
+        osc.stop(t + 0.065);
       });
 
     } else {
-      // Fallback générique click
+      // Fallback générique click feutré
       const pitchFactor = typeof param === "number" ? param : 1.0;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
       osc.type = "sine";
-      osc.frequency.setValueAtTime(800 * pitchFactor, now);
-      osc.frequency.exponentialRampToValueAtTime(200 * pitchFactor, now + 0.015);
+      osc.frequency.setValueAtTime(850 * pitchFactor, now);
+      osc.frequency.exponentialRampToValueAtTime(320 * pitchFactor, now + 0.013);
 
-      gain.gain.setValueAtTime(0.09, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.015);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.020, now + 0.003);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.013);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
 
       osc.start(now);
-      osc.stop(now + 0.015);
+      osc.stop(now + 0.013);
     }
   } catch (e) {
     // Ignorer les erreurs audio browser
