@@ -32,7 +32,7 @@ function cleanLabel(val) {
   return str.split("(")[0].trim();
 }
 
-// Synthèse Sonore Web Audio API (Effets Studio)
+// Synthèse Sonore Web Audio API (Moteur UI Sound Design & Feeljuice)
 let audioCtx = null;
 
 function getAudioContext() {
@@ -40,47 +40,325 @@ function getAudioContext() {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
   if (audioCtx && audioCtx.state === "suspended") {
-    audioCtx.resume();
+    audioCtx.resume().catch(() => {});
   }
   return audioCtx;
 }
 
-function playSound(type) {
+// Déverrouillage tactile passif pour navigateurs mobiles (iOS Safari / WebKit)
+if (typeof window !== "undefined") {
+  const unlockAudio = () => {
+    if (audioCtx && audioCtx.state === "suspended") {
+      audioCtx.resume().catch(() => {});
+    }
+  };
+  window.addEventListener("pointerdown", unlockAudio, { once: true, passive: true });
+}
+
+function playSound(type, param) {
   if (!state.soundEnabled) return;
   const ctx = getAudioContext();
   if (!ctx) return;
 
   try {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
     const now = ctx.currentTime;
 
-    if (type === "click") {
+    if (type === "start" || type === "intro_start") {
+      // 1. SON DE DÉBUT : "Studio Tape Start / Console Wake" (Feeljuice feutré & organique)
+      // Double oscillateur harmonique accordé avec balayage doux & filtre passe-bas analogique
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(700, now);
+      filter.frequency.exponentialRampToValueAtTime(1800, now + 0.16);
+
+      osc1.type = "sine";
+      osc1.frequency.setValueAtTime(220, now);
+      osc1.frequency.exponentialRampToValueAtTime(440, now + 0.14);
+
+      osc2.type = "sine";
+      osc2.frequency.setValueAtTime(330, now);
+      osc2.frequency.exponentialRampToValueAtTime(660, now + 0.14);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.09, now + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+
+      osc1.connect(filter);
+      osc2.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 0.18);
+      osc2.stop(now + 0.18);
+
+    } else if (type === "finish" || type === "success_complete") {
+      // 2. SON DE FIN : "Master Export / Studio Chime" (Triade majeure feutrée & scintillante)
+      // 3 harmoniques étagées (La5 - Do#6 - Mi6) avec décroissance exponentielle douce
+      const chord = [880, 1108.73, 1318.51];
+      chord.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const startOffset = idx * 0.06;
+        const noteStart = now + startOffset;
+        const noteDur = 0.32;
+
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, noteStart);
+        osc.frequency.exponentialRampToValueAtTime(freq * 1.01, noteStart + noteDur);
+
+        gain.gain.setValueAtTime(0.0001, noteStart);
+        gain.gain.linearRampToValueAtTime(0.065 / (idx * 0.25 + 1), noteStart + 0.018);
+        gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + noteDur);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(noteStart);
+        osc.stop(noteStart + noteDur);
+      });
+
+    } else if (type === "slider_step") {
+      // 3. PITCHING SLIDERS 1 À 5 : Échelle pentatonique harmonique (A4, C#5, E5, G#5, C#6)
+      const step = Math.min(5, Math.max(1, parseInt(param) || 3));
+      const scale = { 1: 440, 2: 554.37, 3: 659.25, 4: 830.61, 5: 1108.73 };
+      const baseFreq = scale[step] || 659.25;
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
       osc.type = "sine";
-      osc.frequency.setValueAtTime(800, now);
-      osc.frequency.exponentialRampToValueAtTime(200, now + 0.015);
-      gain.gain.setValueAtTime(0.12, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
+      osc.frequency.setValueAtTime(baseFreq, now);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.97, now + 0.024);
+
+      gain.gain.setValueAtTime(0.085, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.024);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.024);
+
+    } else if (type === "slider_release") {
+      // Confirmation tactile au relâchement du slider
+      const step = Math.min(5, Math.max(1, parseInt(param) || 3));
+      const scale = { 1: 440, 2: 554.37, 3: 659.25, 4: 830.61, 5: 1108.73 };
+      const baseFreq = scale[step] || 659.25;
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(baseFreq * 1.15, now);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq, now + 0.018);
+
+      gain.gain.setValueAtTime(0.055, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.018);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.018);
+
+    } else if (type === "radio") {
+      // 4. BOUTONS RADIOS / CARTES D'OPTIONS : Pop tactile avec micro-pitch selon l'indice
+      const idx = typeof param === "number" ? Math.max(0, param) : 0;
+      const pitchRatio = 1.0 + Math.min(idx * 0.07, 0.35); // Variations subtiles sans machine-gun effect
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(740 * pitchRatio, now);
+      osc.frequency.exponentialRampToValueAtTime(250 * pitchRatio, now + 0.018);
+
+      gain.gain.setValueAtTime(0.10, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.018);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.018);
+
+    } else if (type === "checkbox_on") {
+      // 5. CASES À COCHER (ACTIVATION) : Micro-blip montant satisfaisant pitched selon le compte
+      const count = typeof param === "number" ? Math.max(1, param) : 1;
+      const pitchOffset = Math.min(count * 50, 250);
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(540 + pitchOffset, now);
+      osc.frequency.exponentialRampToValueAtTime(940 + pitchOffset, now + 0.018);
+
+      gain.gain.setValueAtTime(0.09, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.018);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.018);
+
+    } else if (type === "checkbox_off") {
+      // 5b. CASES À COCHER (DÉSACTIVATION) : Micro-blip descendant doux
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(840, now);
+      osc.frequency.exponentialRampToValueAtTime(460, now + 0.015);
+
+      gain.gain.setValueAtTime(0.065, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.015);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
       osc.start(now);
       osc.stop(now + 0.015);
-    } else if (type === "tick") {
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(1200, now);
-      gain.gain.setValueAtTime(0.08, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.01);
-      osc.start(now);
-      osc.stop(now + 0.01);
-    } else if (type === "whoosh") {
+
+    } else if (type === "chip") {
+      // 6. PASTILLES & CHIPS DE SUGGESTION : Pop verre/bulle feutré
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
       osc.type = "sine";
-      osc.frequency.setValueAtTime(300, now);
-      osc.frequency.exponentialRampToValueAtTime(600, now + 0.08);
-      gain.gain.setValueAtTime(0.05, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+      osc.frequency.setValueAtTime(1180, now);
+      osc.frequency.exponentialRampToValueAtTime(660, now + 0.016);
+
+      gain.gain.setValueAtTime(0.075, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.016);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
       osc.start(now);
-      osc.stop(now + 0.08);
+      osc.stop(now + 0.016);
+
+    } else if (type === "matrix") {
+      // 7. GRILLE MATRICIELLE RADIO : Tick discret échelonné par niveau
+      const level = Math.min(5, Math.max(1, parseInt(param) || 3));
+      const baseFreq = 620 + (level * 70); // 690Hz à 970Hz
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(baseFreq, now);
+      osc.frequency.exponentialRampToValueAtTime(280, now + 0.015);
+
+      gain.gain.setValueAtTime(0.07, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.015);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.015);
+
+    } else if (type === "nav_next") {
+      // 8. BOUTON SUIVANT : Impulsion fréquentielle montante vers l'avant
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(460, now);
+      osc.frequency.exponentialRampToValueAtTime(780, now + 0.026);
+
+      gain.gain.setValueAtTime(0.09, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.026);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.026);
+
+    } else if (type === "nav_back") {
+      // 9. BOUTON RETOUR : Blip descendant doux non-intrusif
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(640, now);
+      osc.frequency.exponentialRampToValueAtTime(360, now + 0.022);
+
+      gain.gain.setValueAtTime(0.065, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.022);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.022);
+
+    } else if (type === "toggle_on") {
+      // 10. ACTIVATION SONORE : Deux notes montantes lumineuses (Do5 -> Sol5)
+      [523.25, 783.99].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const t = now + i * 0.055;
+
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, t);
+
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.linearRampToValueAtTime(0.08, t + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(t);
+        osc.stop(t + 0.09);
+      });
+
+    } else if (type === "toggle_off") {
+      // 10b. DÉSACTIVATION SONORE : Deux notes descendantes feutrées (Sol5 -> Do5)
+      [783.99, 523.25].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const t = now + i * 0.045;
+
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, t);
+
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.linearRampToValueAtTime(0.055, t + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(t);
+        osc.stop(t + 0.07);
+      });
+
+    } else {
+      // Fallback générique click
+      const pitchFactor = typeof param === "number" ? param : 1.0;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(800 * pitchFactor, now);
+      osc.frequency.exponentialRampToValueAtTime(200 * pitchFactor, now + 0.015);
+
+      gain.gain.setValueAtTime(0.09, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.015);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.015);
     }
   } catch (e) {
     // Ignorer les erreurs audio browser
@@ -155,15 +433,37 @@ function initSoundToggle() {
   const btn = document.getElementById("btn-sound-toggle");
   if (!btn) return;
 
+  // Restauration de la préférence sonore depuis le stockage local
+  try {
+    const saved = localStorage.getItem("survey_sound_enabled");
+    if (saved === "true") {
+      state.soundEnabled = true;
+      const icon = btn.querySelector(".sound-icon");
+      if (icon) icon.textContent = "🔊";
+      btn.classList.add("active");
+    }
+  } catch (e) {}
+
   btn.addEventListener("click", () => {
-    state.soundEnabled = !state.soundEnabled;
+    const turningOn = !state.soundEnabled;
+    state.soundEnabled = turningOn;
+
+    try {
+      localStorage.setItem("survey_sound_enabled", String(turningOn));
+    } catch (e) {}
+
     const icon = btn.querySelector(".sound-icon");
-    if (icon) icon.textContent = state.soundEnabled ? "🔊" : "🔇";
-    btn.classList.toggle("active", state.soundEnabled);
-    if (state.soundEnabled) {
-      playSound("click");
+    if (icon) icon.textContent = turningOn ? "🔊" : "🔇";
+    btn.classList.toggle("active", turningOn);
+
+    if (turningOn) {
+      playSound("toggle_on");
       showToast("Son studio activé 🔊");
     } else {
+      // Jouer le blip d'extinction juste avant coupure
+      state.soundEnabled = true;
+      playSound("toggle_off");
+      state.soundEnabled = false;
       showToast("Son désactivé 🔇");
     }
   });
@@ -261,7 +561,7 @@ function initNavigation() {
   const btnSubmit = document.getElementById("btn-submit");
 
   btnSec1Next?.addEventListener("click", () => {
-    playSound("click");
+    playSound("start"); // Son de début immersif Studio Wake / Tape Bloom
     triggerWaveformPulse();
     const domain = getSelectedRadioValue("domain_sector");
     state.answers["domain_sector"] = domain;
@@ -280,7 +580,7 @@ function initNavigation() {
   });
 
   btnSec2Next?.addEventListener("click", () => {
-    playSound("click");
+    playSound("nav_next");
     triggerWaveformPulse();
     collectSectionInputs("section-2");
 
@@ -294,7 +594,7 @@ function initNavigation() {
   });
 
   btnSec2Back?.addEventListener("click", () => {
-    playSound("click");
+    playSound("nav_back");
     if (state.currentSubstepSec2 > 1) {
       state.currentSubstepSec2--;
       switchSubstep("section-2", state.currentSubstepSec2);
@@ -304,7 +604,7 @@ function initNavigation() {
   });
 
   btnSec3Next?.addEventListener("click", () => {
-    playSound("click");
+    playSound("nav_next");
     triggerWaveformPulse();
     collectSectionInputs("section-3");
 
@@ -318,7 +618,7 @@ function initNavigation() {
   });
 
   btnSec3Back?.addEventListener("click", () => {
-    playSound("click");
+    playSound("nav_back");
     if (state.currentSubstepSec3 > 1) {
       state.currentSubstepSec3--;
       switchSubstep("section-3", state.currentSubstepSec3);
@@ -328,7 +628,7 @@ function initNavigation() {
   });
 
   btnSec4Back?.addEventListener("click", () => {
-    playSound("click");
+    playSound("nav_back");
     if (state.selectedBranch === "pro") {
       state.currentSubstepSec2 = 3;
       showSubstep("section-2", 3);
@@ -341,7 +641,7 @@ function initNavigation() {
   });
 
   btnSubmit?.addEventListener("click", async () => {
-    playSound("click");
+    playSound("nav_next");
     collectSectionInputs("section-4");
     await handleFormSubmission();
   });
@@ -595,6 +895,8 @@ function initCustomSliders() {
       return { rawPct, step };
     }
 
+    let lastPlayedStep = null;
+
     function onPointerDown(e) {
       isDragging = true;
       thumb.classList.add("is-dragging");
@@ -613,6 +915,9 @@ function initCustomSliders() {
       if (badge) badge.textContent = step;
       if (feedbackLabel) feedbackLabel.textContent = getFeedbackText(step);
       updateTicksVisual(step);
+
+      lastPlayedStep = step;
+      playSound("slider_step", step);
 
       window.addEventListener("mousemove", onPointerMove);
       window.addEventListener("touchmove", onPointerMove, { passive: false });
@@ -633,7 +938,11 @@ function initCustomSliders() {
       if (feedbackLabel) feedbackLabel.textContent = getFeedbackText(step);
       updateTicksVisual(step);
 
-      playSound("tick");
+      // Déclenchement du pitch musical dès qu'on franchit un cran (1 à 5)
+      if (step !== lastPlayedStep) {
+        lastPlayedStep = step;
+        playSound("slider_step", step);
+      }
     }
 
     function onPointerUp(e) {
@@ -645,7 +954,7 @@ function initCustomSliders() {
       const { step } = calculatePos(clientX);
 
       setStep(step, true);
-      playSound("click");
+      playSound("slider_release", step);
 
       window.removeEventListener("mousemove", onPointerMove);
       window.removeEventListener("touchmove", onPointerMove);
@@ -671,7 +980,7 @@ function initSuggestionChips() {
 
   chips.forEach(chip => {
     chip.addEventListener("click", () => {
-      playSound("click");
+      playSound("chip");
       const prefix = chip.dataset.prefix;
       if (prefix) {
         if (!textarea.value.startsWith(prefix)) {
@@ -711,13 +1020,20 @@ function initFormListeners() {
 
   document.querySelectorAll("input[type='checkbox']").forEach(cb => {
     cb.addEventListener("change", () => {
-      playSound("click");
-      triggerWaveformPulse();
       const groupName = cb.name;
       const groupChecked = document.querySelectorAll(`input[name="${groupName}"]:checked`);
+      const count = groupChecked.length;
+
+      // Son pitched selon le nombre de cases cochées
+      if (cb.checked) {
+        playSound("checkbox_on", count);
+      } else {
+        playSound("checkbox_off");
+      }
+
+      triggerWaveformPulse();
       const counterEl = document.getElementById(`counter-${groupName}`);
       if (counterEl) {
-        const count = groupChecked.length;
         counterEl.textContent = `${count} sélectionné${count > 1 ? "s" : ""}`;
         if (typeof anime !== "undefined" && anime.animate) {
           anime.animate(counterEl, {
@@ -732,7 +1048,10 @@ function initFormListeners() {
 
   document.querySelectorAll("input[type='radio']").forEach(radio => {
     radio.addEventListener("change", () => {
-      playSound("click");
+      const grid = radio.closest(".options-grid");
+      const card = radio.closest(".option-card");
+      const idx = (grid && card) ? Array.from(grid.children).indexOf(card) : 0;
+      playSound("radio", idx >= 0 ? idx : 0);
       triggerWaveformPulse();
 
       const qBlock = radio.closest(".question-block");
@@ -851,6 +1170,7 @@ function initMicroInteractions() {
   // Pastilles / Grilles de choix sondages Apple Liquid Glass
   document.querySelectorAll(".pill-option").forEach(pill => {
     pill.addEventListener("click", () => {
+      playSound("chip");
       const span = pill.querySelector("span");
       if (span) {
         anime.animate(span, {
@@ -865,7 +1185,8 @@ function initMicroInteractions() {
   // Table matrice radio feedback
   document.querySelectorAll(".matrix-table input[type='radio']").forEach(radio => {
     radio.addEventListener("change", () => {
-      playSound("click");
+      const val = parseInt(radio.value) || 3;
+      playSound("matrix", val);
       triggerWaveformPulse();
       const row = radio.closest("tr");
       if (row) {
@@ -990,7 +1311,7 @@ function initEndActions() {
   const btnClose = document.getElementById("btn-close-recap");
 
   btnShare?.addEventListener("click", () => {
-    playSound("click");
+    playSound("nav_next");
     const shareUrl = window.location.href.startsWith("http") ? window.location.href : "https://sondage-veille.vercel.app";
     navigator.clipboard.writeText(shareUrl).then(() => {
       showToast("Lien copié ! Merci pour le relais 🙏");
@@ -1000,14 +1321,14 @@ function initEndActions() {
   });
 
   btnReview?.addEventListener("click", () => {
-    playSound("click");
+    playSound("nav_next");
     if (!modal) return;
     populateRecapModal();
     modal.classList.remove("hidden");
   });
 
   btnClose?.addEventListener("click", () => {
-    playSound("click");
+    playSound("nav_back");
     if (modal) modal.classList.add("hidden");
   });
 }
@@ -1264,6 +1585,9 @@ function fallbackExport(data) {
 }
 
 function showSuccessScreen(isFallback = false, userBranch = "public_other") {
+  // Déclenchement du Son de Fin (Master Export Chime / Feeljuice Célébration)
+  playSound("finish");
+
   const answers = state.answers;
 
   // 1. Déclenchement des confettis thématiques (sécurisé)
