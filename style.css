@@ -2081,9 +2081,25 @@ h3, .recap-modal-title {
     margin: 10px 0 12px !important;
   }
 
-  /* Question 1 : confortable, aérée et lisible */
+  /* Pacing & chapitrage visuel aéré des questions sur mobile */
+  .question-block {
+    margin-bottom: 18px !important;
+  }
+
   .question-block#block-q1 {
     margin-bottom: 12px !important;
+  }
+
+  .question-block + .question-block {
+    padding-top: 14px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.07) !important;
+  }
+
+  .question-label {
+    font-size: 0.90rem !important;
+    line-height: 1.34 !important;
+    margin-bottom: 8px !important;
+    color: #f8fafc !important;
   }
 
   .question-label#label-q1 {
@@ -2093,14 +2109,21 @@ h3, .recap-modal-title {
   }
 
   .options-grid {
-    gap: 7px !important;
+    gap: 6px !important;
   }
 
-  /* Cartes de réponses tactiles (Apple HIG touch target) */
+  /* Cartes de réponses tactiles Apple Liquid Glass */
   .option-card {
-    padding: 10px 12px !important;
-    min-height: 50px !important;
+    padding: 9px 12px !important;
+    min-height: 44px !important;
     border-radius: var(--radius-sm) !important;
+    background: rgba(255, 255, 255, 0.035) !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  }
+
+  .option-card:has(.card-desc) {
+    min-height: 50px !important;
+    padding: 10px 12px !important;
   }
 
   .option-card .card-content {
@@ -2108,19 +2131,19 @@ h3, .recap-modal-title {
   }
 
   .option-card .card-title {
-    font-size: 0.88rem !important;
+    font-size: 0.85rem !important;
     line-height: 1.25 !important;
   }
 
   .option-card .card-desc {
-    font-size: 0.74rem !important;
+    font-size: 0.72rem !important;
     line-height: 1.2 !important;
   }
 
   .card-indicator {
     width: 16px !important;
     height: 16px !important;
-    margin-top: 2px !important;
+    margin-top: 1px !important;
   }
 
   .card-indicator::after {
@@ -2128,52 +2151,290 @@ h3, .recap-modal-title {
     height: 7px !important;
   }
 
-  /* Bouton d'action principal confortable et tactile */
+  .inline-other-input {
+    height: 32px !important;
+    font-size: 0.80rem !important;
+    padding: 4px 8px !important;
+    border-radius: 8px !important;
+  }
+
+  /* Boutons d'action et navigation équilibrés */
   .nav-controls {
-    margin-top: 14px !important;
+    margin-top: 16px !important;
     gap: 8px !important;
+    display: flex !important;
   }
 
   .nav-controls button {
-    min-height: 48px !important;
-    padding: 11px 18px !important;
-    font-size: 0.92rem !important;
+    min-height: 46px !important;
+    padding: 10px 16px !important;
+    font-size: 0.90rem !important;
+    border-radius: var(--radius-sm) !important;
   }
 
-  /* Optimisation des sous-étapes suivantes sur mobile */
+  .nav-controls .btn-secondary {
+    flex: 0 0 36% !important;
+  }
+
+  .nav-controls .btn-primary,
+  .nav-controls .btn-submit {
+    flex: 1 !important;
+  }
+
+  /* En-têtes de sous-étapes aérés & lisibles sur une ligne */
   .step-header {
-    margin-bottom: 8px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .section-header-wrap {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin-bottom: 6px !important;
+    gap: 6px !important;
+  }
+
+  .section-badge {
+    font-size: 0.60rem !important;
+    padding: 3px 7px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .substep-badge {
+    font-size: 0.60rem !important;
+    padding: 3px 7px !important;
+    border-radius: 8px !important;
+    font-family: var(--font-mono) !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: var(--text-muted) !important;
   }
 
   .section-title {
-    font-size: 1.15rem !important;
-    line-height: 1.28 !important;
+    font-size: 1.10rem !important;
+    line-height: 1.24 !important;
     margin-bottom: 4px !important;
   }
 
   .section-subtitle {
-    font-size: 0.84rem !important;
-    line-height: 1.4 !important;
-    margin-bottom: 14px !important;
+    font-size: 0.76rem !important;
+    line-height: 1.32 !important;
+    margin-bottom: 10px !important;
+    color: var(--text-muted) !important;
   }
 
   .section-subtitle.intro-context {
+    background: rgba(56, 189, 248, 0.04) !important;
+    border: 1px solid rgba(56, 189, 248, 0.12) !important;
+    border-left: 2px solid var(--cyan-accent) !important;
+    border-radius: 8px !important;
+    padding: 6px 8px !important;
+    font-size: 0.74rem !important;
+    line-height: 1.3 !important;
+    color: var(--text-secondary) !important;
+    margin-bottom: 10px !important;
+  }
+
+  /* Cartes matricielles fréquentielles (Étape 2.2 / 3.2) aérées et compactes */
+  .matrix-stacked-cards {
+    gap: 8px !important;
+    margin-top: 6px !important;
+  }
+
+  .matrix-card {
+    padding: 9px 10px !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.025) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .matrix-card-title {
+    font-size: 0.80rem !important;
+    font-weight: 600 !important;
+    color: var(--cyan-accent) !important;
+    margin-bottom: 6px !important;
+    letter-spacing: 0.01em !important;
+  }
+
+  .matrix-pill-group {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+
+  .pill-option {
+    flex: 0 1 auto !important;
+  }
+
+  .pill-option span {
+    padding: 5px 8px !important;
+    font-size: 0.68rem !important;
+    border-radius: 10px !important;
+    min-height: 28px !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Composants sliders 1 à 5 encadrés style plugin studio */
+  .custom-slider-container {
+    padding: 10px 12px 12px !important;
+    border-radius: 14px !important;
+    background: rgba(255, 255, 255, 0.025) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    margin-top: 4px !important;
+  }
+
+  .slider-feedback-box {
+    margin-bottom: 10px !important;
+    padding: 4px 10px !important;
+    border-radius: 12px !important;
+  }
+
+  .slider-feedback-label {
+    font-size: 0.74rem !important;
+  }
+
+  .slider-thumb {
+    width: 26px !important;
+    height: 26px !important;
+  }
+
+  .thumb-badge {
+    font-size: 0.68rem !important;
+    top: -24px !important;
+  }
+
+  /* Étape 4 (Synthèse & Mot de la fin) */
+  .pre-submit-summary {
     padding: 10px 12px !important;
-    font-size: 0.84rem !important;
+    border-radius: 12px !important;
     margin-bottom: 14px !important;
   }
 
-  .section-header-wrap {
-    margin-bottom: 8px !important;
+  .pre-submit-summary p,
+  #summary-text-content {
+    font-size: 0.80rem !important;
+    line-height: 1.38 !important;
   }
 
-  .section-badge {
-    font-size: 0.64rem !important;
-    padding: 3px 6px !important;
+  .suggestion-chips {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    margin-top: 6px !important;
   }
 
-  .substep-badge {
-    font-size: 0.64rem !important;
-    padding: 3px 6px !important;
+  .suggestion-chips .chip-btn {
+    padding: 4px 8px !important;
+    font-size: 0.68rem !important;
+    border-radius: 10px !important;
+  }
+
+  #global-final-comment {
+    min-height: 68px !important;
+    padding: 8px 10px !important;
+    font-size: 0.82rem !important;
+    border-radius: 10px !important;
+  }
+
+  /* Écran de confirmation & Carte Collector */
+  .profile-collector-card {
+    padding: 14px 12px !important;
+    border-radius: 16px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .collector-header {
+    padding-bottom: 8px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .collector-grid {
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .field-label {
+    font-size: 0.62rem !important;
+  }
+
+  .field-value {
+    font-size: 0.84rem !important;
+  }
+
+  .collector-meters {
+    padding: 10px 12px !important;
+    gap: 10px !important;
+    border-radius: 12px !important;
+  }
+
+  .meter-row {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    grid-template-rows: auto auto !important;
+    gap: 4px 6px !important;
+    align-items: center !important;
+  }
+
+  .meter-label {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    width: auto !important;
+    font-size: 0.74rem !important;
+    color: var(--text-muted) !important;
+  }
+
+  .meter-val {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    font-size: 0.74rem !important;
+    font-weight: 700 !important;
+    color: var(--cyan-accent) !important;
+    font-family: var(--font-mono) !important;
+    text-align: right !important;
+  }
+
+  .meter-bar-container {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    height: 8px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-radius: 4px !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+
+  .success-message-box {
+    padding: 12px !important;
+    font-size: 0.80rem !important;
+    line-height: 1.38 !important;
+    margin-bottom: 14px !important;
+    border-radius: 12px !important;
+  }
+
+  .success-actions-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .success-actions-row button {
+    width: 100% !important;
+    min-height: 44px !important;
+    font-size: 0.88rem !important;
+    border-radius: 12px !important;
   }
 }
