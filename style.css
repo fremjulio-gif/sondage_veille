@@ -546,7 +546,8 @@ h3, .recap-modal-title {
   color: #cbd5e1;
 }
 
-.section-badge.copper + .section-title + .section-subtitle.intro-context {
+.section-badge.copper + .section-title + .section-subtitle.intro-context,
+.section-subtitle.intro-context.copper-context {
   border-left-color: var(--copper-accent);
 }
 
