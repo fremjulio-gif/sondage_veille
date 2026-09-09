@@ -249,67 +249,6 @@ function showToast(msg) {
 }
 
 /* ==========================================================================
-   RUBAN DE PROFILAGE EN DIRECT (STICKY RIBBON)
-   ========================================================================== */
-function updateProfilerRibbon() {
-  const ribbon = document.getElementById("user-profiler-ribbon");
-  const tagsContainer = document.getElementById("ribbon-tags");
-  if (!ribbon || !tagsContainer) return;
-
-  const tags = [];
-
-  if (state.selectedBranch === "pro") {
-    tags.push("🎬 Pro du son");
-  } else if (state.answers.domain_sector === "cinema_other") {
-    tags.push("🎥 Métiers Image");
-  } else if (state.answers.domain_sector === "public_other") {
-    tags.push("🍿 Spectateur");
-  }
-
-  if (state.answers.pro_job) {
-    tags.push(`🎧 ${cleanLabel(state.answers.pro_job)}`);
-  } else if (state.answers.public_job) {
-    tags.push(`📽️ ${cleanLabel(state.answers.public_job)}`);
-  }
-
-  if (state.answers.pro_experience) {
-    tags.push(`⏱ ${cleanLabel(state.answers.pro_experience)}`);
-  }
-
-  const delTasks = safeSplit(state.answers.pro_delegated_tasks);
-  if (delTasks.length > 0) {
-    tags.push(`⚙️ ${delTasks.length} outils IA`);
-  }
-
-  if (tags.length > 0) {
-    ribbon.classList.remove("hidden");
-    tagsContainer.innerHTML = tags.map(t => `<span class="tag-item">${t}</span>`).join("");
-  }
-}
-
-/* ==========================================================================
-   INTERSTICE DE RESPIRATION (1.2S)
-   ========================================================================== */
-function showInterstitial(titleText, callback) {
-  const overlay = document.getElementById("interstitial-overlay");
-  const title = document.getElementById("interstitial-title-text");
-
-  if (!overlay) {
-    callback();
-    return;
-  }
-
-  if (title) title.textContent = titleText;
-  overlay.classList.remove("hidden");
-  playSound("whoosh");
-
-  setTimeout(() => {
-    overlay.classList.add("hidden");
-    callback();
-  }, 1200);
-}
-
-/* ==========================================================================
    1. NAVIGATION & TRANSITIONS ENTRE SECTIONS & SOUS-ÉCRANS
    ========================================================================== */
 function initNavigation() {
@@ -327,22 +266,16 @@ function initNavigation() {
     const domain = getSelectedRadioValue("domain_sector");
     state.answers["domain_sector"] = domain;
 
-    updateProfilerRibbon();
-
     if (domain === "pro_audio") {
       state.selectedBranch = "pro";
       state.currentSubstepSec2 = 1;
       showSubstep("section-2", 1);
-      showInterstitial("Entrons dans le vif du sujet sur la console...", () => {
-        navigateToSection("section-2");
-      });
+      navigateToSection("section-2");
     } else {
       state.selectedBranch = "public";
       state.currentSubstepSec3 = 1;
       showSubstep("section-3", 1);
-      showInterstitial("Voyons comment cela résonne côté image...", () => {
-        navigateToSection("section-3");
-      });
+      navigateToSection("section-3");
     }
   });
 
@@ -350,7 +283,6 @@ function initNavigation() {
     playSound("click");
     triggerWaveformPulse();
     collectSectionInputs("section-2");
-    updateProfilerRibbon();
 
     if (state.currentSubstepSec2 < 3) {
       state.currentSubstepSec2++;
@@ -375,7 +307,6 @@ function initNavigation() {
     playSound("click");
     triggerWaveformPulse();
     collectSectionInputs("section-3");
-    updateProfilerRibbon();
 
     if (state.currentSubstepSec3 < 3) {
       state.currentSubstepSec3++;
@@ -412,7 +343,6 @@ function initNavigation() {
   btnSubmit?.addEventListener("click", async () => {
     playSound("click");
     collectSectionInputs("section-4");
-    checkEasterEgg();
     await handleFormSubmission();
   });
 }
@@ -458,25 +388,23 @@ function switchSubstep(sectionId, targetStepNum) {
 
   if (!targetSubstep) return;
 
-  if (activeSubstep && typeof anime !== "undefined") {
-    anime({
-      targets: activeSubstep,
+  if (activeSubstep && typeof anime !== "undefined" && anime.animate) {
+    anime.animate(activeSubstep, {
       opacity: [1, 0],
       translateY: [0, -8],
       duration: 160,
-      easing: "easeInQuad",
-      complete: () => {
+      ease: "inQuad",
+      onComplete: () => {
         activeSubstep.classList.remove("active");
         activeSubstep.classList.add("hidden");
 
         showSubstep(sectionId, targetStepNum);
         
-        anime({
-          targets: targetSubstep,
+        anime.animate(targetSubstep, {
           opacity: [0, 1],
           translateY: [10, 0],
           duration: 250,
-          easing: "easeOutCubic"
+          ease: "outCubic"
         });
 
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -496,14 +424,13 @@ function navigateToSection(targetSectionId) {
 
   if (!currentSec || !targetSec) return;
 
-  if (typeof anime !== "undefined") {
-    anime({
-      targets: currentSec,
+  if (typeof anime !== "undefined" && anime.animate) {
+    anime.animate(currentSec, {
       opacity: [1, 0],
       translateY: [0, -10],
       duration: 180,
-      easing: "easeInQuad",
-      complete: () => {
+      ease: "inQuad",
+      onComplete: () => {
         currentSec.classList.remove("active");
         currentSec.classList.add("hidden");
 
@@ -528,25 +455,23 @@ function navigateToSection(targetSectionId) {
 }
 
 function animateSectionIn(sectionEl) {
-  if (!sectionEl || typeof anime === "undefined") return;
+  if (!sectionEl || typeof anime === "undefined" || !anime.animate) return;
 
-  anime({
-    targets: sectionEl,
+  anime.animate(sectionEl, {
     opacity: [0, 1],
     translateY: [12, 0],
-    duration: 350,
-    easing: "easeOutCubic"
+    duration: 320,
+    ease: "outCubic"
   });
 
   const elementsToStagger = sectionEl.querySelectorAll(".question-block, .option-card, .matrix-wrapper, .custom-slider-container");
   if (elementsToStagger.length > 0) {
-    anime({
-      targets: elementsToStagger,
+    anime.animate(elementsToStagger, {
       opacity: [0, 1],
       translateY: [8, 0],
-      delay: anime.stagger(30, { start: 60 }),
-      duration: 280,
-      easing: "easeOutCubic"
+      delay: anime.stagger(25, { start: 50 }),
+      duration: 260,
+      ease: "outCubic"
     });
   }
 }
@@ -578,12 +503,11 @@ function updateProgressBar(sectionId) {
   }
 
   if (progressBar) {
-    if (typeof anime !== "undefined") {
-      anime({
-        targets: progressBar,
+    if (typeof anime !== "undefined" && anime.animate) {
+      anime.animate(progressBar, {
         width: `${percentage}%`,
-        duration: 450,
-        easing: "easeOutCubic"
+        duration: 400,
+        ease: "outCubic"
       });
     } else {
       progressBar.style.width = `${percentage}%`;
@@ -642,21 +566,21 @@ function initCustomSliders() {
       if (feedbackLabel) feedbackLabel.textContent = getFeedbackText(step);
       updateTicksVisual(step);
 
-      if (animate && typeof anime !== "undefined") {
-        anime.remove(thumb);
-        anime.remove(fill);
+      if (animate && typeof anime !== "undefined" && anime.animate) {
+        if (anime.utils && anime.utils.remove) {
+          anime.utils.remove(thumb);
+          anime.utils.remove(fill);
+        }
 
-        anime({
-          targets: thumb,
+        anime.animate(thumb, {
           left: `${targetPct}%`,
           duration: 350,
-          easing: "spring(1, 80, 10, 0)"
+          ease: "outCubic"
         });
-        anime({
-          targets: fill,
+        anime.animate(fill, {
           width: `${targetPct}%`,
           duration: 350,
-          easing: "easeOutCubic"
+          ease: "outCubic"
         });
       } else {
         thumb.style.left = `${targetPct}%`;
@@ -676,9 +600,9 @@ function initCustomSliders() {
       thumb.classList.add("is-dragging");
       triggerWaveformPulse();
 
-      if (typeof anime !== "undefined") {
-        anime.remove(thumb);
-        anime.remove(fill);
+      if (typeof anime !== "undefined" && anime.utils && anime.utils.remove) {
+        anime.utils.remove(thumb);
+        anime.utils.remove(fill);
       }
 
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -782,7 +706,6 @@ function initFormListeners() {
       if (btnSec1Next) btnSec1Next.disabled = false;
       const checkq1 = document.getElementById("check-q1");
       if (checkq1) checkq1.classList.add("visible");
-      showToast("Option sélectionnée !");
     });
   });
 
@@ -796,8 +719,12 @@ function initFormListeners() {
       if (counterEl) {
         const count = groupChecked.length;
         counterEl.textContent = `${count} sélectionné${count > 1 ? "s" : ""}`;
-        if (typeof anime !== "undefined") {
-          anime({ targets: counterEl, scale: [1.2, 1], duration: 150, easing: "easeOutQuad" });
+        if (typeof anime !== "undefined" && anime.animate) {
+          anime.animate(counterEl, {
+            scale: [1.2, 1],
+            duration: 150,
+            ease: "outQuad"
+          });
         }
       }
     });
@@ -903,31 +830,61 @@ function getSelectedRadioValue(name) {
 }
 
 /* ==========================================================================
-   5. ANIME.JS MICRO-BUMP SUR LES CARTE DE CHOIX
+   5. ANIME.JS V4 MICRO-INTERACTIONS LIQUID GLASS PHYSIQUES
    ========================================================================== */
 function initMicroInteractions() {
-  if (typeof anime === "undefined") return;
+  if (typeof anime === "undefined" || !anime.animate) return;
 
+  // Cartes de choix tactiles Liquid Glass
   document.querySelectorAll(".option-card").forEach(card => {
     card.addEventListener("click", (e) => {
       if (e.target.classList.contains("inline-other-input")) return;
       
-      anime({
-        targets: card,
-        scale: [1, 1.04, 1],
-        duration: 180,
-        easing: "easeOutCubic"
+      anime.animate(card, {
+        scale: [1, 1.03, 1],
+        duration: 240,
+        ease: "outElastic(1, 0.5)"
       });
     });
   });
 
-  document.querySelectorAll(".btn-primary, .btn-secondary, .btn-submit").forEach(btn => {
-    btn.addEventListener("mousedown", () => {
-      anime({ targets: btn, scale: 0.96, duration: 100, easing: "easeOutQuad" });
+  // Boutons Liquid Glass physiques avec ressorts élastiques Anime.js V4
+  const hasPointerFine = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  document.querySelectorAll(".btn-primary, .btn-secondary, .btn-submit, .sound-toggle-btn").forEach(btn => {
+    btn.addEventListener("pointerdown", () => {
+      if (btn.disabled) return;
+      anime.animate(btn, {
+        scale: 0.95,
+        duration: 120,
+        ease: "outQuad"
+      });
     });
-    btn.addEventListener("mouseup", () => {
-      anime({ targets: btn, scale: 1, duration: 150, easing: "easeOutCubic" });
-    });
+
+    const releaseButton = () => {
+      if (btn.disabled) return;
+      anime.animate(btn, {
+        scale: 1,
+        duration: 360,
+        ease: "outElastic(1, 0.45)"
+      });
+    };
+
+    btn.addEventListener("pointerup", releaseButton);
+    btn.addEventListener("pointercancel", releaseButton);
+    btn.addEventListener("pointerleave", releaseButton);
+
+    // Micro-réaction survol desktop (frugal, exclu sur mobile tactile)
+    if (hasPointerFine) {
+      btn.addEventListener("pointerenter", () => {
+        if (btn.disabled) return;
+        anime.animate(btn, {
+          scale: 1.02,
+          duration: 180,
+          ease: "outQuad"
+        });
+      });
+    }
   });
 }
 
@@ -992,15 +949,6 @@ function updatePreSubmitSummary() {
   summaryBox.classList.remove("hidden");
 }
 
-/* ==========================================================================
-   7. EASTER EGG ÉGALISEUR TRANCHÉ
-   ========================================================================== */
-function checkEasterEgg() {
-  const elapsed = (Date.now() - state.startTime) / 1000;
-  if (elapsed < 12) {
-    showToast("On dirait que votre avis est déjà bien tranché sur le sujet ! 👀");
-  }
-}
 
 /* ==========================================================================
    8. ACTIONS DE FIN (PARTAGE & MODAL ACCORDÉON RÉCAPITULATIF)
@@ -1199,13 +1147,12 @@ async function handleFormSubmission() {
   if (loadingOverlay) loadingOverlay.classList.remove("hidden");
 
   const mainPanel = document.getElementById("main-panel");
-  if (mainPanel && typeof anime !== "undefined") {
-    anime({
-      targets: mainPanel,
+  if (mainPanel && typeof anime !== "undefined" && anime.animate) {
+    anime.animate(mainPanel, {
       translateY: [0, -14],
       opacity: [1, 0.95],
       duration: 300,
-      easing: "easeOutCubic"
+      ease: "outCubic"
     });
   }
 
@@ -1368,15 +1315,14 @@ function showSuccessScreen(isFallback = false, userBranch = "public_other") {
   navigateToSection("section-success");
 
   const successEl = document.getElementById("section-success");
-  if (successEl && typeof anime !== "undefined") {
+  if (successEl && typeof anime !== "undefined" && anime.animate) {
     const blocks = successEl.querySelectorAll(".success-signal-badge, .success-headline, .profile-collector-card, .success-message-box, .success-actions-row");
-    anime({
-      targets: blocks,
+    anime.animate(blocks, {
       opacity: [0, 1],
       translateY: [16, 0],
-      delay: anime.stagger(140),
-      duration: 400,
-      easing: "easeOutCubic"
+      delay: anime.stagger(120),
+      duration: 380,
+      ease: "outCubic"
     });
   }
 }

@@ -58,13 +58,6 @@
         </div>
       </header>
 
-      <!-- Ruban Sticky de Profilage Dynamique (Minimaliste & Discret) -->
-      <div id="user-profiler-ribbon" class="user-profiler-ribbon hidden" aria-live="polite">
-        <div class="ribbon-label">PROFIL DÉTECTÉ :</div>
-        <div class="ribbon-tags" id="ribbon-tags">
-          <!-- Injecté dynamiquement -->
-        </div>
-      </div>
 
       <!-- SECTION 1 : ACCUEIL & PRESENTATION -->
       <section id="section-1" class="survey-section active" aria-labelledby="title-sec1">
@@ -1057,14 +1050,6 @@
     </div>
   </main>
 
-  <!-- Écran d'Interstice (Respiration 1.2s) -->
-  <div id="interstitial-overlay" class="interstitial-overlay hidden" aria-hidden="true">
-    <div class="interstitial-box glass-card">
-      <div class="interstitial-icon">🎛️</div>
-      <p class="interstitial-title" id="interstitial-title-text">Chargement de la console studio...</p>
-    </div>
-  </div>
-
   <!-- Container de Toasts / Flash messages éphémères -->
   <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
@@ -1083,9 +1068,9 @@
     </div>
   </div>
 
-  <!-- Canvas Confetti & Anime.js -->
+  <!-- Canvas Confetti & Anime.js V4 -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@4.0.0/lib/anime.iife.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
