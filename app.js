@@ -848,6 +848,36 @@ function initMicroInteractions() {
     });
   });
 
+  // Pastilles / Grilles de choix sondages Apple Liquid Glass
+  document.querySelectorAll(".pill-option").forEach(pill => {
+    pill.addEventListener("click", () => {
+      const span = pill.querySelector("span");
+      if (span) {
+        anime.animate(span, {
+          scale: [0.94, 1.05, 1],
+          duration: 240,
+          ease: "outElastic(1, 0.5)"
+        });
+      }
+    });
+  });
+
+  // Table matrice radio feedback
+  document.querySelectorAll(".matrix-table input[type='radio']").forEach(radio => {
+    radio.addEventListener("change", () => {
+      playSound("click");
+      triggerWaveformPulse();
+      const row = radio.closest("tr");
+      if (row) {
+        anime.animate(row, {
+          backgroundColor: ["rgba(56, 189, 248, 0.12)", "rgba(56, 189, 248, 0.04)"],
+          duration: 300,
+          ease: "outCubic"
+        });
+      }
+    });
+  });
+
   // Boutons Liquid Glass physiques avec ressorts élastiques Anime.js V4
   const hasPointerFine = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
