@@ -1954,44 +1954,49 @@ h3, .recap-modal-title {
 }
 
 /* ==========================================================================
-   OPTIMISATION RESPONSIVE MOBILE ULTRA-COMPACTE (BREAKPOINT <= 480px)
-   Garantit que la Question 1 et ses options sont visibles sans scroll sur iPhone
+   OPTIMISATION RESPONSIVE MOBILE HARMONIEUSE (BREAKPOINT <= 480px)
+   Calibrée pour iPhone 13 mini, 14, 15, SE : lisibilité Apple, boutons tactiles confortables,
+   centrage vertical équilibré, et Question 1 visible immédiatement sans scroll.
    ========================================================================== */
 @media (max-width: 480px) {
-  /* 5. Réduction taille de police barre de progression (-15 à 20%) */
+  /* 5. Barre de progression en haut */
   .progress-info {
-    top: 5px !important;
-    left: 10px !important;
-    right: 10px !important;
+    top: 6px !important;
+    left: 12px !important;
+    right: 12px !important;
   }
 
   .progress-step-text,
   .progress-percentage {
-    font-size: 0.62rem !important; /* Réduction ~17% (était 0.75rem) */
+    font-size: 0.68rem !important; /* -15% par rapport à desktop (0.75rem) */
   }
 
-  /* 4. Réduction des marges et paddings verticaux */
+  /* 4. Layout centré et aéré : évite le tassage vers le haut */
   .app-viewport {
-    padding: 26px 8px max(10px, env(safe-area-inset-bottom)) !important;
+    padding: 36px 12px max(20px, env(safe-area-inset-bottom)) !important;
     min-height: 100dvh !important;
     display: flex !important;
-    align-items: flex-start !important; /* Rapproche la carte du haut d'écran */
+    flex-direction: column !important;
+    justify-content: center !important; /* Centrage vertical harmonieux */
+    align-items: center !important;
   }
 
   .app-card {
-    border-radius: var(--radius-sm) !important;
-    margin: 0 auto !important;
+    width: 100% !important;
+    max-width: 440px !important;
+    border-radius: var(--radius-md) !important;
+    margin: auto 0 !important;
   }
 
-  /* 3 & 5. Simplification en-tête studio : masquer bars VU, masquer label 'Audio Studio', réduire texte auteur */
+  /* 3 & 5. En-tête studio compact et propre */
   .studio-header {
-    padding: 6px 10px !important;
-    gap: 6px !important;
+    padding: 10px 14px !important;
+    gap: 8px !important;
   }
 
   .studio-badge .badge-text {
-    font-size: 0.58rem !important; /* Réduction ~17% (était 0.7rem) */
-    letter-spacing: 0.02em !important;
+    font-size: 0.64rem !important; /* -15% par rapport à desktop (0.7rem) */
+    letter-spacing: 0.03em !important;
   }
 
   .rec-dot {
@@ -2008,39 +2013,39 @@ h3, .recap-modal-title {
   }
 
   .sound-toggle-btn {
-    padding: 3px 6px !important;
-    min-height: 26px !important;
-    border-radius: 8px !important;
+    padding: 4px 8px !important;
+    min-height: 30px !important;
+    border-radius: 10px !important;
     gap: 0 !important;
   }
 
   .sound-icon {
-    font-size: 0.75rem !important;
+    font-size: 0.85rem !important;
   }
 
-  /* 4. Section et Hero compactés */
+  /* 4. Contenu de section aéré et lisible */
   .survey-section {
-    padding: 10px 10px 12px !important;
+    padding: 16px 14px 18px !important;
   }
 
   .hero-section {
-    gap: 2px !important;
+    gap: 5px !important;
     padding: 0 !important;
   }
 
-  /* 1. Titre h1 compacté */
+  /* 1. Titre h1 bien proportionné et lisible */
   .main-title {
-    font-size: 1.08rem !important;
-    line-height: 1.24 !important;
+    font-size: 1.22rem !important;
+    line-height: 1.28 !important;
     margin-bottom: 2px !important;
   }
 
-  /* 5. Auteur / Mémoire réduit de ~17% */
+  /* 5. Auteur / Mémoire lisible et net */
   .author-inline {
-    font-size: 0.68rem !important; /* Réduction ~17% (était 0.82rem) */
-    margin: 1px 0 3px !important;
-    gap: 4px !important;
-    line-height: 1.25 !important;
+    font-size: 0.76rem !important; /* -15% par rapport à desktop (0.82rem) */
+    margin: 2px 0 4px !important;
+    gap: 5px !important;
+    line-height: 1.3 !important;
   }
 
   /* 1. Suppression du paragraphe redondant sur mobile */
@@ -2053,119 +2058,122 @@ h3, .recap-modal-title {
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
-    justify-content: flex-start !important;
+    justify-content: space-between !important;
     align-items: center !important;
-    gap: 5px !important;
-    margin: 2px 0 2px !important;
+    gap: 4px !important;
+    margin: 4px 0 2px !important;
     width: 100% !important;
-    overflow-x: hidden !important;
+    overflow: hidden !important;
   }
 
   .badge-pill {
-    flex: 0 1 auto !important;
-    font-size: 0.65rem !important;
-    padding: 2px 6px !important;
+    flex: 1 1 auto !important;
+    text-align: center !important;
+    font-size: 0.67rem !important;
+    padding: 3px 5px !important;
     white-space: nowrap !important;
-    line-height: 1.25 !important;
+    line-height: 1.3 !important;
+    letter-spacing: -0.01em !important;
   }
 
-  /* 4. Ligne de séparation affinée */
+  /* 4. Ligne de séparation élégante */
   .hero-divider {
-    margin: 6px 0 8px !important;
+    margin: 10px 0 12px !important;
   }
 
-  /* Question 1 compacte et optimisée */
+  /* Question 1 : confortable, aérée et lisible */
   .question-block#block-q1 {
-    margin-bottom: 8px !important;
+    margin-bottom: 12px !important;
   }
 
   .question-label#label-q1 {
-    font-size: 0.86rem !important;
-    line-height: 1.25 !important;
-    margin-bottom: 6px !important;
+    font-size: 0.94rem !important;
+    line-height: 1.35 !important;
+    margin-bottom: 8px !important;
   }
 
   .options-grid {
-    gap: 5px !important;
+    gap: 7px !important;
   }
 
+  /* Cartes de réponses tactiles (Apple HIG touch target) */
   .option-card {
-    padding: 7px 9px !important;
-    min-height: auto !important;
+    padding: 10px 12px !important;
+    min-height: 50px !important;
     border-radius: var(--radius-sm) !important;
   }
 
   .option-card .card-content {
-    gap: 1px !important;
+    gap: 2px !important;
   }
 
   .option-card .card-title {
-    font-size: 0.80rem !important;
-    line-height: 1.2 !important;
+    font-size: 0.88rem !important;
+    line-height: 1.25 !important;
   }
 
   .option-card .card-desc {
-    font-size: 0.68rem !important;
-    line-height: 1.15 !important;
+    font-size: 0.74rem !important;
+    line-height: 1.2 !important;
   }
 
   .card-indicator {
-    width: 14px !important;
-    height: 14px !important;
-    margin-top: 1px !important;
+    width: 16px !important;
+    height: 16px !important;
+    margin-top: 2px !important;
   }
 
   .card-indicator::after {
-    width: 6px !important;
-    height: 6px !important;
+    width: 7px !important;
+    height: 7px !important;
   }
 
-  /* Bouton d'action principal */
+  /* Bouton d'action principal confortable et tactile */
   .nav-controls {
-    margin-top: 8px !important;
-    gap: 6px !important;
+    margin-top: 14px !important;
+    gap: 8px !important;
   }
 
   .nav-controls button {
-    min-height: 38px !important;
-    padding: 7px 12px !important;
-    font-size: 0.84rem !important;
+    min-height: 48px !important;
+    padding: 11px 18px !important;
+    font-size: 0.92rem !important;
   }
 
   /* Optimisation des sous-étapes suivantes sur mobile */
   .step-header {
-    margin-bottom: 6px !important;
+    margin-bottom: 8px !important;
   }
 
   .section-title {
-    font-size: 1.05rem !important;
-    line-height: 1.24 !important;
-    margin-bottom: 3px !important;
+    font-size: 1.15rem !important;
+    line-height: 1.28 !important;
+    margin-bottom: 4px !important;
   }
 
   .section-subtitle {
-    font-size: 0.78rem !important;
-    line-height: 1.35 !important;
-    margin-bottom: 10px !important;
+    font-size: 0.84rem !important;
+    line-height: 1.4 !important;
+    margin-bottom: 14px !important;
   }
 
   .section-subtitle.intro-context {
-    padding: 8px 10px !important;
-    font-size: 0.78rem !important;
-    margin-bottom: 10px !important;
+    padding: 10px 12px !important;
+    font-size: 0.84rem !important;
+    margin-bottom: 14px !important;
   }
 
   .section-header-wrap {
-    margin-bottom: 6px !important;
+    margin-bottom: 8px !important;
   }
 
   .section-badge {
-    font-size: 0.60rem !important;
-    padding: 2px 5px !important;
+    font-size: 0.64rem !important;
+    padding: 3px 6px !important;
   }
 
   .substep-badge {
-    font-size: 0.60rem !important;
-    padding: 2px 5px !important;
+    font-size: 0.64rem !important;
+    padding: 3px 6px !important;
   }
 }
